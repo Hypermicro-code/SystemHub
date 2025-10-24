@@ -22,6 +22,9 @@ function Placeholder() {
 }
 
 export default function App() {
+  // Vite setter BASE_URL = base fra vite.config.ts ("/" lokalt, "/SystemHub/" på Pages)
+  const basename = import.meta.env.BASE_URL || "/";
+
   return (
     <ShellProvider
       config={{
@@ -32,16 +35,16 @@ export default function App() {
         title: "MorningCoffee – System"
       }}
     >
-      <BrowserRouter>
+      <BrowserRouter basename={basename}>
         <Routes>
           <Route
             path="/"
-            element={
-              <ProjectLayout
-                title="Progress"
-                content={<Placeholder />}
-              />
-            }
+            element={<ProjectLayout title="Progress" content={<Placeholder />} />}
+          />
+          {/* Fallback: send alt annet til / */}
+          <Route
+            path="*"
+            element={<ProjectLayout title="Progress" content={<Placeholder />} />}
           />
         </Routes>
       </BrowserRouter>
