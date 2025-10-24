@@ -17,6 +17,11 @@ export interface ShellContextValue extends Required<Pick<ShellConfig, "mode" | "
   t: (key: string) => string;
   openHelp: () => void;
   pushToast: (msg: string) => void;
+
+  /** App registrerer en handler for kommandoer fra shell */
+  setAppCommandHandler: (fn: (cmd: { name: string; payload?: any }) => void) => void;
+  /** Shell sender en kommando til app */
+  emitAppCommand: (name: string, payload?: any) => void;
 }
 
 export const SHELL_NAME: "PlatformShell";
@@ -46,15 +51,8 @@ export const tokens: {
     border: string;
     toastBg: string;
   };
-  radius: {
-    card: number;
-  };
-  space: {
-    xs: number;
-    sm: number;
-    md: number;
-    lg: number;
-  };
+  radius: { card: number };
+  space: { xs: number; sm: number; md: number; lg: number };
 };
 
 export function initI18n(locale?: string): void;
