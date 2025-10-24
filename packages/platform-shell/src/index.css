@@ -106,3 +106,8 @@ body {
 .hub-section { border: 1px solid #2A2E34; padding: 12px; }
 /* ==== [BLOCK: Hub helpers] END ==== */
 
+.mcl-nav-link.active {
+  background: #1D2024;
+  border-color: #3A4047;
+  font-weight: 600;
+}
