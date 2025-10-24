@@ -1,15 +1,16 @@
 {
   "name": "@hypermicro-code/platform-shell",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
-  "description": "MorningCoffee Labs Platform Shell (minimal stub for import)",
+  "description": "MorningCoffee Labs Platform Shell (MVP A)",
   "main": "src/index.js",
   "module": "src/index.js",
   "types": "src/index.d.ts",
   "sideEffects": false,
   "peerDependencies": {
     "react": "^18.0.0",
-    "react-dom": "^18.0.0"
+    "react-dom": "^18.0.0",
+    "react-router-dom": "^6.25.0"
   },
   "author": "MorningCoffee Labs",
   "license": "MIT"
