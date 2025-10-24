@@ -4,7 +4,7 @@ import React, { createContext, useCallback, useContext, useMemo, useRef, useStat
 
 // ==== [BLOCK: Meta] BEGIN ====
 export const SHELL_NAME = "PlatformShell";
-export const SHELL_VERSION = "0.0.2";
+export const SHELL_VERSION = "0.0.3";
 // ==== [BLOCK: Meta] END ====
 
 // ==== [BLOCK: Tokens/Theme] BEGIN ====
@@ -24,27 +24,23 @@ export const tokens = {
 // ==== [BLOCK: Tokens/Theme] END ====
 
 // ==== [BLOCK: i18n] BEGIN ====
-// Minimal i18n: enkelt key-value lager. Én språkfil (nb) i egen fil.
 const NB = {
   "app.title": "MorningCoffee – System",
   "header.help": "Hjelp",
+  "header.ping": "Ping Progress",
   "panel.helpTitle": "Hjelp",
   "panel.close": "Lukk"
 };
 const EN = {
   "app.title": "MorningCoffee – System",
   "header.help": "Help",
+  "header.ping": "Ping Progress",
   "panel.helpTitle": "Help",
   "panel.close": "Close"
 };
-
 let DICT = { nb: NB, en: EN };
 let CURRENT_LOCALE = "nb";
-
-export function initI18n(locale = "nb") {
-  CURRENT_LOCALE = DICT[locale] ? locale : "nb";
-}
-
+export function initI18n(locale = "nb") { CURRENT_LOCALE = DICT[locale] ? locale : "nb"; }
 function translate(key) {
   const table = DICT[CURRENT_LOCALE] || NB;
   return table[key] || key;
@@ -52,24 +48,27 @@ function translate(key) {
 // ==== [BLOCK: i18n] END ====
 
 // ==== [BLOCK: Context] BEGIN ====
-const ShellCtx = createContext(null);
-
+const ShellCtx = createContext({});
 export function ShellProvider({ config, children }) {
   const [locale, setLocale] = useState(config?.locale || "nb");
   const [helpOpen, setHelpOpen] = useState(false);
   const [toasts, setToasts] = useState([]);
 
-  // hold i18n state synk med CURRENT_LOCALE
-  React.useEffect(() => {
-    initI18n(locale);
-  }, [locale]);
+  // App-kommandoer
+  const appHandlerRef = useRef(null);
+  const setAppCommandHandler = useCallback((fn) => { appHandlerRef.current = typeof fn === "function" ? fn : null; }, []);
+  const emitAppCommand = useCallback((name, payload) => {
+    if (typeof appHandlerRef.current === "function") {
+      appHandlerRef.current({ name, payload });
+    }
+  }, []);
+
+  React.useEffect(() => { initI18n(locale); }, [locale]);
 
   const pushToast = useCallback((msg) => {
-    setToasts((q) => [...q, { id: Date.now() + Math.random(), msg }]);
-    // Automatisk auto-close etter 3s (stub)
-    setTimeout(() => {
-      setToasts((q) => q.slice(1));
-    }, 3000);
+    const id = Date.now() + Math.random();
+    setToasts((q) => [...q, { id, msg }]);
+    setTimeout(() => { setToasts((q) => q.filter(t => t.id !== id)); }, 3000);
   }, []);
 
   const openHelp = useCallback(() => setHelpOpen(true), []);
@@ -83,10 +82,11 @@ export function ShellProvider({ config, children }) {
     setLocale,
     t: translate,
     openHelp,
-    pushToast
-  }), [config?.mode, config?.orgId, config?.projectId, locale, openHelp, pushToast]);
+    pushToast,
+    setAppCommandHandler,
+    emitAppCommand
+  }), [config?.mode, config?.orgId, config?.projectId, locale, openHelp, pushToast, setAppCommandHandler, emitAppCommand]);
 
-  // Layout chrome + overlays (help + toast) pakkes rundt children
   return React.createElement(
     ShellCtx.Provider,
     { value },
@@ -95,7 +95,6 @@ export function ShellProvider({ config, children }) {
     helpOpen ? React.createElement(HelpPanel, { onClose: closeHelp }) : null
   );
 }
-
 export function useShell() {
   const ctx = useContext(ShellCtx);
   if (!ctx) throw new Error("useShell must be used within <ShellProvider>");
@@ -105,12 +104,13 @@ export function useShell() {
 
 // ==== [BLOCK: Layout/Header] BEGIN ====
 function Header({ title }) {
-  const { t, openHelp } = useShell();
+  const { t, openHelp, emitAppCommand } = useShell();
   const styles = {
     root: {
       display: "flex",
       alignItems: "center",
       justifyContent: "space-between",
+      gap: 8,
       padding: `${tokens.space.sm}px ${tokens.space.md}px`,
       background: tokens.color.header,
       borderBottom: `1px solid ${tokens.color.border}`,
@@ -120,16 +120,24 @@ function Header({ title }) {
       zIndex: 10
     },
     left: { fontWeight: 700 },
-    rightBtn: {
+    right: { display: "flex", alignItems: "center", gap: 8 },
+    btn: {
       border: `1px solid ${tokens.color.border}`,
       padding: "8px 12px",
       borderRadius: 8,
       cursor: "pointer",
-      background: tokens.color.accent,     // tydelig kontrast
-      color: "#111",                        // mørk tekst mot lys knapp
-      fontWeight: 600,
-      boxShadow: "0 2px 8px rgba(0,0,0,0.35)",
-      outline: "none"
+      background: tokens.color.panel,
+      color: tokens.color.text,
+      fontWeight: 600
+    },
+    btnAccent: {
+      border: `1px solid ${tokens.color.border}`,
+      padding: "8px 12px",
+      borderRadius: 8,
+      cursor: "pointer",
+      background: tokens.color.accent,
+      color: "#111",
+      fontWeight: 700
     }
   };
   return React.createElement(
@@ -137,13 +145,13 @@ function Header({ title }) {
     { style: styles.root },
     React.createElement("div", { style: styles.left }, title || translate("app.title")),
     React.createElement(
-      "button",
-      { style: styles.rightBtn, onClick: openHelp },
-      translate("header.help")
+      "div",
+      { style: styles.right },
+      React.createElement("button", { style: styles.btn, onClick: () => emitAppCommand("progress:ping", { at: Date.now() }) }, t("header.ping")),
+      React.createElement("button", { style: styles.btnAccent, onClick: openHelp }, t("header.help"))
     )
   );
 }
-
 export function ProjectLayout({ title, content }) {
   const styles = {
     page: { background: tokens.color.bg, minHeight: "100vh", color: tokens.color.text },
@@ -162,52 +170,20 @@ export function ProjectLayout({ title, content }) {
 function HelpPanel({ onClose }) {
   const { t } = useShell();
   const styles = {
-    overlay: {
-      position: "fixed",
-      inset: 0,
-      background: "rgba(0,0,0,0.55)",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      zIndex: 50
-    },
-    panel: {
-      width: "min(640px, 92vw)",
-      background: tokens.color.panel,
-      border: `1px solid ${tokens.color.border}`,
-      borderRadius: tokens.radius.card,
-      padding: tokens.space.md,
-      boxShadow: "0 10px 30px rgba(0,0,0,0.4)"
-    },
+    overlay: { position: "fixed", inset: 0, background: "rgba(0,0,0,0.55)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 50 },
+    panel: { width: "min(640px, 92vw)", background: tokens.color.panel, border: `1px solid ${tokens.color.border}`, borderRadius: tokens.radius.card, padding: tokens.space.md, boxShadow: "0 10px 30px rgba(0,0,0,0.4)" },
     h: { marginTop: 0, marginBottom: tokens.space.sm, color: tokens.color.accent },
     p: { opacity: 0.9, lineHeight: 1.45 },
     row: { display: "flex", justifyContent: "flex-end", marginTop: tokens.space.md },
-    btn: {
-      border: `1px solid ${tokens.color.border}`,
-      padding: "8px 12px",
-      borderRadius: 6,
-      cursor: "pointer",
-      background: tokens.color.header,
-      color: tokens.color.text
-    }
+    btn: { border: `1px solid ${tokens.color.border}`, padding: "8px 12px", borderRadius: 6, cursor: "pointer", background: tokens.color.header, color: tokens.color.text }
   };
   return React.createElement(
-    "div",
-    { style: styles.overlay, role: "dialog", "aria-modal": "true" },
+    "div", { style: styles.overlay, role: "dialog", "aria-modal": "true" },
     React.createElement(
-      "div",
-      { style: styles.panel },
+      "div", { style: styles.panel },
       React.createElement("h2", { style: styles.h }, t("panel.helpTitle")),
-      React.createElement(
-        "p",
-        { style: styles.p },
-        "Dette er et hjelpepanelet (stub). Innhold og lenker kommer i Etappe C."
-      ),
-      React.createElement(
-        "div",
-        { style: styles.row },
-        React.createElement("button", { style: styles.btn, onClick: onClose }, t("panel.close"))
-      )
+      React.createElement("p", { style: styles.p }, "Dette er et hjelpepanelet (stub). Innhold og lenker kommer i Etappe C."),
+      React.createElement("div", { style: styles.row }, React.createElement("button", { style: styles.btn, onClick: onClose }, t("panel.close")))
     )
   );
 }
@@ -216,44 +192,18 @@ function HelpPanel({ onClose }) {
 // ==== [BLOCK: Toast Stub] BEGIN ====
 function ToastHost({ items }) {
   const styles = {
-    host: {
-      position: "fixed",
-      top: 12,
-      right: 12,
-      display: "flex",
-      flexDirection: "column",
-      gap: 8,
-      zIndex: 60
-    },
-    item: {
-      background: tokens.color.toastBg,
-      border: `1px solid ${tokens.color.border}`,
-      color: tokens.color.text,
-      padding: "8px 12px",
-      borderRadius: 6,
-      boxShadow: "0 6px 24px rgba(0,0,0,0.35)"
-    }
+    host: { position: "fixed", top: 12, right: 12, display: "flex", flexDirection: "column", gap: 8, zIndex: 60 },
+    item: { background: tokens.color.toastBg, border: `1px solid ${tokens.color.border}`, color: tokens.color.text, padding: "8px 12px", borderRadius: 6, boxShadow: "0 6px 24px rgba(0,0,0,0.35)" }
   };
-  return React.createElement(
-    "div",
-    { style: styles.host },
-    ...(items || []).map((t) =>
-      React.createElement("div", { key: t.id, style: styles.item }, String(t.msg))
-    )
+  const children = (Array.isArray(items) ? items : []).map((t) =>
+    React.createElement("div", { key: t.id, style: styles.item }, String(t.msg))
   );
+  // Passér én "array"-child i stedet for spredte arguments (robust i prod-minify)
+  return React.createElement("div", { style: styles.host }, children);
 }
 // ==== [BLOCK: Toast Stub] END ====
 
 // ==== [BLOCK: Public helpers] BEGIN ====
-export function getShellInfo() {
-  return { name: SHELL_NAME, version: SHELL_VERSION };
-}
-
-export default {
-  ProjectLayout,
-  ShellProvider,
-  useShell,
-  tokens,
-  initI18n
-};
+export function getShellInfo() { return { name: SHELL_NAME, version: SHELL_VERSION }; }
+export default { ProjectLayout, ShellProvider, useShell, tokens, initI18n };
 // ==== [BLOCK: Public helpers] END ====
