@@ -122,10 +122,14 @@ function Header({ title }) {
     left: { fontWeight: 700 },
     rightBtn: {
       border: `1px solid ${tokens.color.border}`,
-      padding: "6px 10px",
-      borderRadius: 6,
+      padding: "8px 12px",
+      borderRadius: 8,
       cursor: "pointer",
-      background: tokens.color.panel
+      background: tokens.color.accent,     // tydelig kontrast
+      color: "#111",                        // mørk tekst mot lys knapp
+      fontWeight: 600,
+      boxShadow: "0 2px 8px rgba(0,0,0,0.35)",
+      outline: "none"
     }
   };
   return React.createElement(
