@@ -1,5 +1,6 @@
 import React from "react";
 import { useShell, ProjectList } from "@hypermicro-code/platform-shell";
+import ProgressGridView from "./ProgressGridView";
 
 export default function ProgressHome() {
   const { orgId, projectId, locale, setAppCommandHandler, pushToast } = useShell();
@@ -22,7 +23,6 @@ export default function ProgressHome() {
     []
   );
 
-  // === [STILKONSTANTER] ===
   const boxStyle: React.CSSProperties = {
     background: "#001b33",
     border: "1px solid #004080",
@@ -50,6 +50,9 @@ export default function ProgressHome() {
           }}
         />
       </div>
+
+      <h3 style={{ marginTop: 24 }}>Fremdriftsplan (Grid placeholder)</h3>
+      <ProgressGridView />
 
       <p style={{ opacity: 0.8, marginTop: 16 }}>
         Test “Ping Progress” i header for å se kommando-bussen (toast + Console).
