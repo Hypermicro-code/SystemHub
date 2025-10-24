@@ -1,7 +1,7 @@
 // ==== [BLOCK: ProjectDetail] BEGIN ====
 import React from "react";
 import { getProject, updateProjectName, archiveProject } from "../data";
-import { setQueryParams } from "../nav";
+import { setQueryParams, getBrowserLocale } from "../nav";
 
 export function ProjectDetail({ projectId }: { projectId: string }) {
   const [name, setName] = React.useState<string>("");
@@ -26,13 +26,21 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
     setStatus("archived");
   };
 
+  const orgId = "demo-org";
+  const locale = getBrowserLocale();
+
   return (
     <section className="hub-section">
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <h2 style={{ margin: 0 }}>Prosjekt: {projectId}</h2>
         <div style={{ display: "flex", gap: 8 }}>
           <button className="mcl-btn" onClick={backToList}>Til liste</button>
-          <a className="mcl-btn" href={`./?projectId=${encodeURIComponent(projectId)}`}>Åpne i Progress</a>
+          <a
+            className="mcl-btn"
+            href={`./?projectId=${encodeURIComponent(projectId)}&orgId=${encodeURIComponent(orgId)}&locale=${encodeURIComponent(locale)}`}
+          >
+            Åpne i Progress
+          </a>
         </div>
       </div>
 
