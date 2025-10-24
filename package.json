@@ -1,0 +1,20 @@
+{
+  "name": "systemhub",
+  "private": true,
+  "version": "0.0.1",
+  "description": "MorningCoffee Labs – SystemHub monorepo",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "clean": "echo \"(root) nothing to clean yet\"",
+    "build": "echo \"(root) no build – build per workspace later\"",
+    "dev": "echo \"(root) run dev inside a workspace (e.g. apps/progress)\""
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "author": "MorningCoffee Labs",
+  "license": "MIT"
+}
