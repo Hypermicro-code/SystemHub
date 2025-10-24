@@ -2,9 +2,8 @@
 import React from "react";
 import { ProjectCards } from "./components/ProjectCards";
 import { ModuleLinks } from "./components/ModuleLinks";
-import { HubProjects } from "./pages/HubProjects";
-import { HubReports } from "./pages/HubReports";
-import { HubOrg } from "./pages/HubOrg";
+import { HubProjects, HubReports, HubOrg } from "./pages";
+
 // ==== [BLOCK: Imports] END ====
 
 // ==== [BLOCK: Helpers] BEGIN ====
