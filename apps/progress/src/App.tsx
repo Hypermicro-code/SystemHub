@@ -1,36 +1,20 @@
 /* ==== [BLOCK: Imports] BEGIN ==== */
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import {
-  ShellProvider,
-  ProjectLayout,
-  initI18n
-} from "@hypermicro-code/platform-shell";
+import { ShellProvider, ProjectLayout, initI18n } from "@hypermicro-code/platform-shell";
+import ProgressHome from "./ProgressHome";
 /* ==== [BLOCK: Imports] END ==== */
 
-/* ==== [BLOCK: Init i18n] BEGIN ==== */
 initI18n("nb");
-/* ==== [BLOCK: Init i18n] END ==== */
-
-function Placeholder() {
-  return (
-    <div>
-      <p>Shell MVP – Etappe A montert ✅</p>
-      <p>Her kommer Progress-innholdet i Etappe B.</p>
-    </div>
-  );
-}
 
 export default function App() {
-  // Vite setter BASE_URL = base fra vite.config.ts ("/" lokalt, "/SystemHub/" på Pages)
   const basename = import.meta.env.BASE_URL || "/";
-
   return (
     <ShellProvider
       config={{
         mode: "standalone",
-        orgId: null,
-        projectId: null,
+        orgId: "demo-org",
+        projectId: "demo-project",
         locale: "nb",
         title: "MorningCoffee – System"
       }}
@@ -39,12 +23,11 @@ export default function App() {
         <Routes>
           <Route
             path="/"
-            element={<ProjectLayout title="Progress" content={<Placeholder />} />}
+            element={<ProjectLayout title="Progress" content={<ProgressHome />} />}
           />
-          {/* Fallback: send alt annet til / */}
           <Route
             path="*"
-            element={<ProjectLayout title="Progress" content={<Placeholder />} />}
+            element={<ProjectLayout title="Progress" content={<ProgressHome />} />}
           />
         </Routes>
       </BrowserRouter>
