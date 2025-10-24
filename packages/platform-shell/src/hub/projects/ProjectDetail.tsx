@@ -1,7 +1,7 @@
 // ==== [BLOCK: ProjectDetail] BEGIN ====
 import React from "react";
-import { getProject, updateProjectName, archiveProject } from "../../data";
-import { setQueryParams } from "../../nav";
+import { getProject, updateProjectName, archiveProject } from "../data";
+import { setQueryParams } from "../nav";
 
 export function ProjectDetail({ projectId }: { projectId: string }) {
   const [name, setName] = React.useState<string>("");
