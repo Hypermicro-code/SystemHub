@@ -100,3 +100,9 @@ body {
   background: rgba(0,0,0,0.15);
 }
 /* ==== [BLOCK: Buttons] END ==== */
+
+/* ==== [BLOCK: Hub helpers] BEGIN ==== */
+.hub-root { padding: 8px; }
+.hub-section { border: 1px solid #2A2E34; padding: 12px; }
+/* ==== [BLOCK: Hub helpers] END ==== */
+
