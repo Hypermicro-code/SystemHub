@@ -1,9 +1,35 @@
+/* ==== [BLOCK: Imports] BEGIN ==== */
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 
+/** Shell + global base-css */
+import "../../../packages/platform-shell/src/index.css";
+import { ShellLayout } from "../../../packages/platform-shell/src/layout/ShellLayout";
+
+/** Hub-view fra platform-shell */
+import { HubView } from "../../../packages/platform-shell/src/hub/HubView";
+/* ==== [BLOCK: Imports] END ==== */
+
+/* ==== [BLOCK: Helpers] BEGIN ==== */
+function isHubView(): boolean {
+  const qp = new URLSearchParams(window.location.search);
+  return qp.get("view") === "hub";
+}
+/* ==== [BLOCK: Helpers] END ==== */
+
+/* ==== [BLOCK: Mount] BEGIN ==== */
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <App />
+    {isHubView() ? (
+      <ShellLayout chrome="shell" showSidebar>
+        <HubView />
+      </ShellLayout>
+    ) : (
+      <ShellLayout chrome="app">
+        <App />
+      </ShellLayout>
+    )}
   </React.StrictMode>
 );
+/* ==== [BLOCK: Mount] END ==== */
