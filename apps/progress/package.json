@@ -1,6 +1,6 @@
 {
   "name": "@hypermicro-code/progress",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "type": "module",
   "description": "MorningCoffee Labs – Progress app",
@@ -12,6 +12,7 @@
   "dependencies": {
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-router-dom": "^6.25.0",
     "@hypermicro-code/platform-shell": "file:../../packages/platform-shell"
   },
   "devDependencies": {
