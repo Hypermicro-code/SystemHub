@@ -27,11 +27,20 @@ export function PlatformShell(props) {
 
   const merged = { ...base, ...style };
 
-  return (
-    <div style={merged} data-shell={SHELL_NAME} data-version={SHELL_VERSION}>
-      <div style={{ fontSize: 18, fontWeight: 700, marginBottom: 6 }}>{title}</div>
-      <div style={{ opacity: 0.8 }}>{subtitle}</div>
-    </div>
+  // JSX er byttet ut med React.createElement for å unngå transpile i node_modules
+  return React.createElement(
+    "div",
+    { style: merged, "data-shell": SHELL_NAME, "data-version": SHELL_VERSION },
+    React.createElement(
+      "div",
+      { style: { fontSize: 18, fontWeight: 700, marginBottom: 6 } },
+      title
+    ),
+    React.createElement(
+      "div",
+      { style: { opacity: 0.8 } },
+      subtitle
+    )
   );
 }
 // ==== [BLOCK: Component] END ====
