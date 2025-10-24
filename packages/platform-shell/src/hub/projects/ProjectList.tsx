@@ -1,7 +1,7 @@
 // ==== [BLOCK: ProjectList] BEGIN ====
 import React from "react";
-import { loadProjects, createProject } from "../../data";
-import { setQueryParams } from "../../nav";
+import { loadProjects, createProject } from "../data";
+import { setQueryParams } from "../nav";
 import { NewProjectModal } from "./NewProjectModal";
 
 export function ProjectList() {
