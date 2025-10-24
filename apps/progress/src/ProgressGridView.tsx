@@ -1,8 +1,58 @@
 import React from "react";
-import { TableCore } from "@hypermicro-code/table-core";
+import { TableCore, TableRow, TableColumn } from "@hypermicro-code/table-core";
 import { ToolbarCore } from "@hypermicro-code/toolbar-core";
+import { useShell } from "@hypermicro-code/platform-shell";
 
 export default function ProgressGridView() {
+  const { pushToast } = useShell();
+
+  // --- Columns & Rows (eies av Progress) ---
+  const [columns] = React.useState<TableColumn[]>([
+    { key: "id", title: "ID", width: 100 },
+    { key: "name", title: "Aktivitet", width: 260 },
+    { key: "start", title: "Start", width: 140 },
+    { key: "end", title: "Slutt", width: 140 }
+  ]);
+
+  const [rows, setRows] = React.useState<TableRow[]>([
+    { id: "A-01", name: "Oppstart prosjekt", start: "2025-11-01", end: "2025-11-02" },
+    { id: "A-02", name: "Planlegging",       start: "2025-11-03", end: "2025-11-10" }
+  ]);
+
+  // --- Toolbar-kommandoliste ---
+  const commands = React.useMemo(
+    () => [
+      { id: "add-row", label: "Legg til rad", hint: "Append nederst" },
+      { id: "clear",   label: "Tøm tabell",   hint: "Fjern alle rader" },
+      { id: "log",     label: "Logg data",    hint: "Console.log" }
+    ],
+    []
+  );
+
+  function handleCommand(id: string) {
+    if (id === "add-row") {
+      const next: TableRow[] = [
+        ...rows,
+        { id: `A-${String(rows.length + 1).padStart(2, "0")}`, name: "Ny aktivitet", start: "", end: "" }
+      ];
+      setRows(next);
+      pushToast("La til ny rad");
+    } else if (id === "clear") {
+      setRows([]);
+      pushToast("Tabell tømt");
+    } else if (id === "log") {
+      // @ts-ignore
+      console.log("[Progress/Table] columns:", columns, "rows:", rows);
+      pushToast("Data logget i Console");
+    }
+  }
+
+  function handleRowsChange(next: TableRow[]) {
+    setRows(next);
+    pushToast("Endring lagret");
+  }
+
+  // --- Progress-blå rammer (samme stil som før) ---
   const boxStyle: React.CSSProperties = {
     background: "#001b33",
     border: "1px solid #004080",
@@ -35,13 +85,11 @@ export default function ProgressGridView() {
   return (
     <div style={boxStyle}>
       <div style={toolbarWrap}>
-        {/* Live mount av ToolbarCore */}
-        <ToolbarCore />
+        <ToolbarCore commands={commands} onCommand={handleCommand} />
       </div>
       <div style={tableWrap}>
-        {/* Live mount av TableCore */}
         <div style={{ flex: 1 }}>
-          <TableCore />
+          <TableCore columns={columns} rows={rows} onRowsChange={handleRowsChange} />
         </div>
       </div>
     </div>
