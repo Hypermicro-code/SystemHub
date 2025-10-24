@@ -1,8 +1,9 @@
 // ==== [BLOCK: ProjectList] BEGIN ====
 import React from "react";
 import { loadProjects, createProject } from "../data";
-import { setQueryParams } from "../nav";
+import { setQueryParams, getBrowserLocale } from "../nav";
 import { NewProjectModal } from "./NewProjectModal";
+import { buildProjectsCsv, downloadCsv } from "../export";
 
 export function ProjectList() {
   const [rows, setRows] = React.useState(loadProjects());
@@ -10,13 +11,22 @@ export function ProjectList() {
 
   const refresh = () => setRows(loadProjects());
 
+  const exportCsv = () => {
+    const csv = buildProjectsCsv();
+    downloadCsv("manage-hub-projects.csv", csv);
+  };
+
+  const orgId = "demo-org";
+  const locale = getBrowserLocale();
+
   return (
     <section className="hub-section">
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <h2 style={{ margin: 0 }}>Prosjekter</h2>
-        <div style={{ display: "flex", gap: 8 }}>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           <button className="mcl-btn" onClick={() => setShowNew(true)}>Nytt prosjekt</button>
           <button className="mcl-btn" onClick={refresh} title="Oppdater liste">Oppdater</button>
+          <button className="mcl-btn" onClick={exportCsv} title="Eksporter som CSV">Eksporter CSV</button>
         </div>
       </div>
 
@@ -50,7 +60,7 @@ export function ProjectList() {
                   <a
                     className="mcl-btn"
                     style={{ marginLeft: 6, textDecoration: "none" }}
-                    href={`./?projectId=${encodeURIComponent(p.id)}`}
+                    href={`./?projectId=${encodeURIComponent(p.id)}&orgId=${encodeURIComponent(orgId)}&locale=${encodeURIComponent(locale)}`}
                     title="Åpne i Progress"
                   >
                     Progress
