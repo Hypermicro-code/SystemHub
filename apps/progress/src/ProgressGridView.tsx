@@ -2,6 +2,7 @@ import React from "react";
 import { TableCore, TableRow, TableColumn } from "@hypermicro-code/table-core";
 import { ToolbarCore } from "@hypermicro-code/toolbar-core";
 import { useShell } from "@hypermicro-code/platform-shell";
+import GanttPreview from "./GanttPreview";
 
 export default function ProgressGridView() {
   const { pushToast } = useShell();
@@ -19,14 +20,18 @@ export default function ProgressGridView() {
     { id: "A-02", name: "Planlegging",       start: "2025-11-03", end: "2025-11-10" }
   ]);
 
+  // --- UI state ---
+  const [showGantt, setShowGantt] = React.useState(true);
+
   // --- Toolbar-kommandoliste ---
   const commands = React.useMemo(
     () => [
-      { id: "add-row", label: "Legg til rad", hint: "Append nederst" },
-      { id: "clear",   label: "Tøm tabell",   hint: "Fjern alle rader" },
-      { id: "log",     label: "Logg data",    hint: "Console.log" }
+      { id: "add-row",     label: "Legg til rad", hint: "Append nederst" },
+      { id: "clear",       label: "Tøm tabell",   hint: "Fjern alle rader" },
+      { id: "log",         label: "Logg data",    hint: "Console.log" },
+      { id: "toggleGantt", label: showGantt ? "Skjul Gantt" : "Vis Gantt", hint: "Veksle Gantt" }
     ],
-    []
+    [showGantt]
   );
 
   function handleCommand(id: string) {
@@ -44,6 +49,8 @@ export default function ProgressGridView() {
       // @ts-ignore
       console.log("[Progress/Table] columns:", columns, "rows:", rows);
       pushToast("Data logget i Console");
+    } else if (id === "toggleGantt") {
+      setShowGantt((v) => !v);
     }
   }
 
@@ -52,7 +59,7 @@ export default function ProgressGridView() {
     pushToast("Endring lagret");
   }
 
-  // --- Progress-blå rammer (samme stil som før) ---
+  // --- Progress-blå rammer ---
   const boxStyle: React.CSSProperties = {
     background: "#001b33",
     border: "1px solid #004080",
@@ -76,8 +83,9 @@ export default function ProgressGridView() {
     background: "#001326",
     border: "1px solid #004080",
     borderRadius: 6,
-    flexGrow: 1,
     display: "flex",
+    flexDirection: "column",
+    gap: 8,
     minHeight: 260,
     padding: 6
   };
@@ -88,9 +96,16 @@ export default function ProgressGridView() {
         <ToolbarCore commands={commands} onCommand={handleCommand} />
       </div>
       <div style={tableWrap}>
-        <div style={{ flex: 1 }}>
-          <TableCore columns={columns} rows={rows} onRowsChange={handleRowsChange} />
+        <div style={{ flex: 1, display: "flex" }}>
+          <div style={{ flex: 1 }}>
+            <TableCore columns={columns} rows={rows} onRowsChange={handleRowsChange} />
+          </div>
         </div>
+        {showGantt && (
+          <div style={{ background: "#001b33", border: "1px solid #004080", borderRadius: 6, padding: 8 }}>
+            <GanttPreview rows={rows} />
+          </div>
+        )}
       </div>
     </div>
   );
