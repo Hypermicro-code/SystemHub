@@ -1,3 +1,4 @@
+// ==== [BLOCK: HubReports] BEGIN ====
 import React from "react";
 
 export function HubReports() {
@@ -9,3 +10,4 @@ export function HubReports() {
     </section>
   );
 }
+// ==== [BLOCK: HubReports] END ====
