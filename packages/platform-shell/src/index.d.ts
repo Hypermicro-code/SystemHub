@@ -36,10 +36,18 @@ export function useShell(): ShellContextValue;
 
 export interface ProjectLayoutProps {
   title?: string;
-  content?: React.ReactNode; // mount-slot (fra appens router)
+  content?: React.ReactNode; // mount-slot
+}
+export function ProjectLayout(props: ProjectLayoutProps): React.ReactElement;
+
+export type ProjectListItem = { id: string; name: string; code?: string };
+
+export interface ProjectListProps {
+  items: ProjectListItem[];
+  onSelect?: (item: ProjectListItem) => void;
 }
 
-export function ProjectLayout(props: ProjectLayoutProps): React.ReactElement;
+export function ProjectList(props: ProjectListProps): React.ReactElement;
 
 export const tokens: {
   color: {
@@ -50,9 +58,11 @@ export const tokens: {
     accent: string;
     border: string;
     toastBg: string;
+    hover: string;
   };
   radius: { card: number };
   space: { xs: number; sm: number; md: number; lg: number };
+  shadow: { card: string };
 };
 
 export function initI18n(locale?: string): void;
@@ -61,6 +71,7 @@ export function getShellInfo(): { name: string; version: string };
 
 declare const _default: {
   ProjectLayout: typeof ProjectLayout;
+  ProjectList: typeof ProjectList;
   ShellProvider: typeof ShellProvider;
   useShell: typeof useShell;
   tokens: typeof tokens;
