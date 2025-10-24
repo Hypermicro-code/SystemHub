@@ -4,7 +4,7 @@ import React, { createContext, useCallback, useContext, useMemo, useRef, useStat
 
 // ==== [BLOCK: Meta] BEGIN ====
 export const SHELL_NAME = "PlatformShell";
-export const SHELL_VERSION = "0.0.3";
+export const SHELL_VERSION = "0.0.4";
 // ==== [BLOCK: Meta] END ====
 
 // ==== [BLOCK: Tokens/Theme] BEGIN ====
@@ -16,10 +16,12 @@ export const tokens = {
     text: "#f2f2f2",
     accent: "#ffcc66",
     border: "#2a2b2e",
-    toastBg: "#202124"
+    toastBg: "#202124",
+    hover: "rgba(255,255,255,0.06)"
   },
   radius: { card: 8 },
-  space: { xs: 4, sm: 8, md: 16, lg: 24 }
+  space: { xs: 4, sm: 8, md: 16, lg: 24 },
+  shadow: { card: "0 10px 30px rgba(0,0,0,0.35)" }
 };
 // ==== [BLOCK: Tokens/Theme] END ====
 
@@ -171,7 +173,7 @@ function HelpPanel({ onClose }) {
   const { t } = useShell();
   const styles = {
     overlay: { position: "fixed", inset: 0, background: "rgba(0,0,0,0.55)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 50 },
-    panel: { width: "min(640px, 92vw)", background: tokens.color.panel, border: `1px solid ${tokens.color.border}`, borderRadius: tokens.radius.card, padding: tokens.space.md, boxShadow: "0 10px 30px rgba(0,0,0,0.4)" },
+    panel: { width: "min(640px, 92vw)", background: tokens.color.panel, border: `1px solid ${tokens.color.border}`, borderRadius: tokens.radius.card, padding: tokens.space.md, boxShadow: tokens.shadow.card },
     h: { marginTop: 0, marginBottom: tokens.space.sm, color: tokens.color.accent },
     p: { opacity: 0.9, lineHeight: 1.45 },
     row: { display: "flex", justifyContent: "flex-end", marginTop: tokens.space.md },
@@ -198,12 +200,66 @@ function ToastHost({ items }) {
   const children = (Array.isArray(items) ? items : []).map((t) =>
     React.createElement("div", { key: t.id, style: styles.item }, String(t.msg))
   );
-  // Passér én "array"-child i stedet for spredte arguments (robust i prod-minify)
   return React.createElement("div", { style: styles.host }, children);
 }
 // ==== [BLOCK: Toast Stub] END ====
 
+// ==== [BLOCK: ProjectList] BEGIN ====
+export function ProjectList({ items, onSelect }) {
+  const styles = {
+    grid: {
+      display: "grid",
+      gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
+      gap: tokens.space.md
+    },
+    card: {
+      background: tokens.color.panel,
+      border: `1px solid ${tokens.color.border}`,
+      borderRadius: tokens.radius.card,
+      padding: tokens.space.md,
+      cursor: "pointer",
+      transition: "background 120ms ease, transform 80ms ease",
+      userSelect: "none"
+    },
+    name: { fontWeight: 700, marginBottom: 6, color: tokens.color.text },
+    code: { opacity: 0.8 }
+  };
+
+  function onEnter(e, item) {
+    e.currentTarget.style.background = tokens.color.hover;
+  }
+  function onLeave(e, item) {
+    e.currentTarget.style.background = tokens.color.panel;
+  }
+  function onDown(e) {
+    e.currentTarget.style.transform = "scale(0.99)";
+  }
+  function onUp(e) {
+    e.currentTarget.style.transform = "scale(1)";
+  }
+
+  const children = (items || []).map((it) =>
+    React.createElement(
+      "div",
+      {
+        key: it.id,
+        style: styles.card,
+        onMouseEnter: (e) => onEnter(e, it),
+        onMouseLeave: (e) => onLeave(e, it),
+        onMouseDown: onDown,
+        onMouseUp: onUp,
+        onClick: () => onSelect && onSelect(it)
+      },
+      React.createElement("div", { style: styles.name }, it.name || "Prosjekt"),
+      it.code ? React.createElement("div", { style: styles.code }, it.code) : null
+    )
+  );
+
+  return React.createElement("div", { style: styles.grid }, children);
+}
+// ==== [BLOCK: ProjectList] END ====
+
 // ==== [BLOCK: Public helpers] BEGIN ====
 export function getShellInfo() { return { name: SHELL_NAME, version: SHELL_VERSION }; }
-export default { ProjectLayout, ShellProvider, useShell, tokens, initI18n };
+export default { ProjectLayout, ProjectList, ShellProvider, useShell, tokens, initI18n };
 // ==== [BLOCK: Public helpers] END ====
