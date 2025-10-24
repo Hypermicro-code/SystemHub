@@ -1,7 +1,14 @@
 import * as React from "react";
 
+export type ToolbarCommand = {
+  id: string;
+  label: string;
+  hint?: string;
+};
+
 export interface ToolbarCoreProps {
-  // reserverte props for senere bruk
+  commands: ToolbarCommand[];
+  onCommand?: (id: string) => void;
 }
 
 export function ToolbarCore(props: ToolbarCoreProps): React.ReactElement;
