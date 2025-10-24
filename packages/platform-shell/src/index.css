@@ -111,3 +111,7 @@ body {
   border-color: #3A4047;
   font-weight: 600;
 }
+/* ==== [BLOCK: Hub table helpers] BEGIN ==== */
+table th, table td { font-size: 14px; }
+input:focus, button:focus { outline: 1px dashed #3A4047; outline-offset: 1px; }
+/* ==== [BLOCK: Hub table helpers] END ==== */
