@@ -22,23 +22,34 @@ export default function ProgressHome() {
     []
   );
 
+  // === [STILKONSTANTER] ===
+  const boxStyle: React.CSSProperties = {
+    background: "#001b33",
+    border: "1px solid #004080",
+    borderRadius: 8,
+    padding: 16,
+    color: "#cce0ff"
+  };
+
   return (
-    <div>
-      <p>Progress er montert.</p>
-      <ul>
+    <div style={boxStyle}>
+      <p style={{ marginTop: 0 }}>Progress er montert.</p>
+      <ul style={{ marginBottom: 16 }}>
         <li><strong>orgId:</strong> {String(orgId)}</li>
         <li><strong>projectId:</strong> {String(projectId)}</li>
         <li><strong>locale:</strong> {String(locale)}</li>
       </ul>
 
-      <h3 style={{ marginTop: 24 }}>Dine prosjekter (dummy)</h3>
-      <ProjectList
-        items={items}
-        onSelect={(it) => {
-          console.log("[Progress] valgt prosjekt:", it);
-          pushToast(`Valgt prosjekt: ${it.code || it.id}`);
-        }}
-      />
+      <h3 style={{ marginTop: 0 }}>Dine prosjekter (dummy)</h3>
+      <div style={{ background: "#001326", border: "1px solid #004080", borderRadius: 6, padding: 12 }}>
+        <ProjectList
+          items={items}
+          onSelect={(it) => {
+            console.log("[Progress] valgt prosjekt:", it);
+            pushToast(`Valgt prosjekt: ${it.code || it.id}`);
+          }}
+        />
+      </div>
 
       <p style={{ opacity: 0.8, marginTop: 16 }}>
         Test “Ping Progress” i header for å se kommando-bussen (toast + Console).
