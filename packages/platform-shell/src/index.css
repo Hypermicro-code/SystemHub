@@ -1,0 +1,102 @@
+/* ==== [BLOCK: CSS Reset & Base] BEGIN ==== */
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; }
+body {
+  margin: 0;
+  background: #111214; /* theme.colors.bg.app */
+  color: #EAECEF;      /* theme.text.primary */
+  font-family: ui-sans-serif, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+  font-size: 14px;
+  line-height: 1.45;
+}
+/* ==== [BLOCK: CSS Reset & Base] END ==== */
+
+/* ==== [BLOCK: Shell Layout] BEGIN ==== */
+.mcl-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.mcl-topbar {
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  background: #6B3E2E; /* brand.base */
+  color: #EAECEF;
+  border-bottom: 1px solid #4C2A1F; /* brand.dark */
+}
+
+.mcl-topbar .mcl-brand {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.mcl-brand-title { font-weight: 600; }
+.mcl-brand-sub { opacity: 0.8; font-size: 12px; }
+
+.mcl-shell-body {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  min-height: calc(100vh - 48px);
+}
+
+.mode-standalone .mcl-shell-body {
+  grid-template-columns: 1fr; /* skjuler sidebar visuelt i standalone */
+}
+
+.mcl-sidebar {
+  background: #17181B; /* bg.surface */
+  border-right: 1px solid #2A2E34; /* border.subtle */
+  padding: 12px;
+}
+
+.mcl-shell-content {
+  background: #111214; /* bg.app */
+  padding: 12px;
+}
+/* ==== [BLOCK: Shell Layout] END ==== */
+
+/* ==== [BLOCK: Sidebar Nav] BEGIN ==== */
+.mcl-nav { display: flex; flex-direction: column; gap: 4px; }
+.mcl-nav-section {
+  margin: 10px 0 6px;
+  font-size: 12px;
+  color: #B9C0C7; /* text.secondary */
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.mcl-nav-link {
+  display: block;
+  text-decoration: none;
+  color: #EAECEF;
+  padding: 8px 10px;
+  border: 1px solid transparent;
+}
+.mcl-nav-link:hover {
+  background: #1D2024; /* bg.elevated */
+  border-color: #2A2E34;
+}
+/* ==== [BLOCK: Sidebar Nav] END ==== */
+
+/* ==== [BLOCK: Buttons] BEGIN ==== */
+.mcl-btn {
+  height: 28px;
+  padding: 0 10px;
+  border: 1px solid #3A4047; /* border.strong */
+  background: #1D2024;       /* elevated */
+  color: #EAECEF;
+  border-radius: 0;           /* spisse hjørner */
+  cursor: pointer;
+}
+.mcl-btn:hover { filter: brightness(1.08); }
+.mcl-btn.ghost {
+  background: transparent;
+  border-color: transparent;
+}
+.mcl-btn.ghost:hover {
+  background: rgba(0,0,0,0.15);
+}
+/* ==== [BLOCK: Buttons] END ==== */
