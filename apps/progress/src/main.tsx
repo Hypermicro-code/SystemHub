@@ -10,8 +10,8 @@ import { ShellLayout } from "../../../packages/platform-shell/src/layout/ShellLa
 /** Hub-view (for Hub-rute) */
 import { HubView } from "../../../packages/platform-shell/src/hub/HubView";
 
-/** Bridge-overlay som leser URL-param fra Hub */
-import { HubBridgeOverlay } from "./bridge/HubBridgeOverlay";
+/** Progress context (hub-kommando-buss/kontekst) */
+import { ProgressProvider } from "./context/ProgressContext";
 /* ==== [BLOCK: Imports] END ==== */
 
 /* ==== [BLOCK: Helpers] BEGIN ==== */
@@ -30,9 +30,9 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       </ShellLayout>
     ) : (
       <ShellLayout chrome="app">
-        {/* Overlayen er passiv og vises kun hvis URL-en inneholder context-parametre */}
-        <HubBridgeOverlay />
-        <App />
+        <ProgressProvider>
+          <App />
+        </ProgressProvider>
       </ShellLayout>
     )}
   </React.StrictMode>
