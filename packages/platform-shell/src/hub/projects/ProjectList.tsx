@@ -1,4 +1,3 @@
-// ==== [BLOCK: ProjectList] BEGIN ====
 import React from "react";
 import { loadProjects, createProject } from "../data";
 import { setQueryParams, getBrowserLocale } from "../nav";
@@ -8,13 +7,8 @@ import { buildProjectsCsv, downloadCsv } from "../export";
 export function ProjectList() {
   const [rows, setRows] = React.useState(loadProjects());
   const [showNew, setShowNew] = React.useState(false);
-
   const refresh = () => setRows(loadProjects());
-
-  const exportCsv = () => {
-    const csv = buildProjectsCsv();
-    downloadCsv("manage-hub-projects.csv", csv);
-  };
+  const exportCsv = () => downloadCsv("manage-hub-projects.csv", buildProjectsCsv());
 
   const orgId = "demo-org";
   const locale = getBrowserLocale();
@@ -25,8 +19,8 @@ export function ProjectList() {
         <h2 style={{ margin: 0 }}>Prosjekter</h2>
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           <button className="mcl-btn" onClick={() => setShowNew(true)}>Nytt prosjekt</button>
-          <button className="mcl-btn" onClick={refresh} title="Oppdater liste">Oppdater</button>
-          <button className="mcl-btn" onClick={exportCsv} title="Eksporter som CSV">Eksporter CSV</button>
+          <button className="mcl-btn" onClick={refresh}>Oppdater</button>
+          <button className="mcl-btn" onClick={exportCsv}>Eksporter CSV</button>
         </div>
       </div>
 
@@ -53,27 +47,34 @@ export function ProjectList() {
                   <button
                     className="mcl-btn"
                     onClick={() => setQueryParams({ view: "hub", page: "projects", pid: p.id })}
-                    title="Åpne detalj"
                   >
                     Åpne
                   </button>
+
+                  {/* Full-modus */}
                   <a
                     className="mcl-btn"
                     style={{ marginLeft: 6, textDecoration: "none" }}
-                    href={`./?projectId=${encodeURIComponent(p.id)}&orgId=${encodeURIComponent(orgId)}&locale=${encodeURIComponent(locale)}`}
-                    title="Åpne i Progress"
+                    href={`./?projectId=${encodeURIComponent(p.id)}&orgId=${encodeURIComponent(orgId)}&locale=${encodeURIComponent(locale)}&mode=full`}
+                    title="Åpne i Progress (full)"
                   >
                     Progress
+                  </a>
+
+                  {/* Lite-modus */}
+                  <a
+                    className="mcl-btn"
+                    style={{ marginLeft: 6, textDecoration: "none", opacity: 0.8 }}
+                    href={`./?projectId=${encodeURIComponent(p.id)}&orgId=${encodeURIComponent(orgId)}&locale=${encodeURIComponent(locale)}&mode=lite`}
+                    title="Åpne i Progress (Lite-modus)"
+                  >
+                    Lite
                   </a>
                 </td>
               </tr>
             ))}
             {rows.length === 0 && (
-              <tr>
-                <td style={{ padding: 12, opacity: 0.8 }} colSpan={4}>
-                  Ingen prosjekter enda.
-                </td>
-              </tr>
+              <tr><td style={{ padding: 12, opacity: 0.8 }} colSpan={4}>Ingen prosjekter enda.</td></tr>
             )}
           </tbody>
         </table>
@@ -93,4 +94,3 @@ export function ProjectList() {
     </section>
   );
 }
-// ==== [BLOCK: ProjectList] END ====
