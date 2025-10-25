@@ -13,10 +13,6 @@ import { HubView } from "../../../packages/platform-shell/src/hub/HubView";
 /** Progress context (hub-kommando-buss/kontekst) */
 import { ProgressProvider } from "./context/ProgressContext";
 
-/** VISUELL INDIKATOR for lite-modus (uten å røre App.tsx) */
-import { LiteBadge } from "./ux/LiteBadge";
-/* ==== [BLOCK: Imports] END ==== */
-
 /* ==== [BLOCK: Helpers] BEGIN ==== */
 function isHubView(): boolean {
   const qp = new URLSearchParams(window.location.search);
@@ -35,7 +31,6 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       // ⬇⬇⬇ ProgressProvider FLYTTES UTENPÅ ShellLayout:
       <ProgressProvider>
         <ShellLayout chrome="app">
-          <LiteBadge />
           <App />
         </ShellLayout>
       </ProgressProvider>
