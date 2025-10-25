@@ -1,13 +1,20 @@
 // ==== [BLOCK: Imports] BEGIN ====
 import React from "react";
 import { useProgressCtx } from "./context/ProgressContext";
-import TableCore from "../../../packages/table-core/src/TableCore"; // ⬅ default import
+
+/** Ekte TableCore fra pakken din */
+import TableCore from "../../../packages/table-core/src/TableCore";
+
+/** Ekte ToolbarCore fra pakken din */
+import ToolbarCore from "../../../packages/toolbar-core/src/ToolbarCore";
+
+/** Banneren vi lagde for Full-modus */
 import { ProjectInfoBanner } from "./ux/ProjectInfoBanner";
-import { ToolbarCore } from "../../../packages/toolbar-core/src/ToolbarCore"; // placeholder inntil full integrasjon
 // ==== [BLOCK: Imports] END ====
 
+
 // ==== [BLOCK: Demo Data] BEGIN ====
-// Felles kolonnedefinisjoner for Lite + Full
+// Felles kolonnedefinisjoner for Lite + Full (in-memory demo)
 const DEMO_COLUMNS = [
   { id: "name",      header: "Aktivitet",  type: "text",   width: 220 },
   { id: "start",     header: "Start",      type: "date",   width: 140 },
@@ -26,12 +33,13 @@ function mkRow(id: string, name: string, start: string, end: string, duration: n
   return { id, name, start, end, duration, owner, status, color };
 }
 const DEMO_ROWS_INITIAL = [
-  mkRow("r1", "Oppstart / plan", "2025-01-06", "2025-01-10", 5, "team-a", 100, "#66ccff"),
+  mkRow("r1", "Oppstart / plan", "2025-01-06", "2025-01-10", 5,  "team-a", 100, "#66ccff"),
   mkRow("r2", "Prosjektering",   "2025-01-13", "2025-02-21", 30, "team-b",  45, "#ffaa66"),
   mkRow("r3", "Innkjøp",         "2025-02-03", "2025-02-14", 10, "ext",     15, "#cc99ff"),
   mkRow("r4", "Montasje",        "2025-03-03", "2025-03-28", 20, "team-a",   0, "#aaff99"),
 ];
 // ==== [BLOCK: Demo Data] END ====
+
 
 // ==== [BLOCK: Component] BEGIN ====
 export default function App() {
@@ -45,7 +53,7 @@ export default function App() {
   // ---- LITE-MODUS: presentasjon + utskrift (ingen lagring, men full tabell)
   if (mode === "lite") {
     return (
-      <div className="progress-print-root" style={{ display: "grid", gridTemplateRows: "auto auto 1fr", height: "100%" }}>
+      <div className="progress-print-root" style={{ display: "grid", gridTemplateRows: "auto 1fr auto", height: "100%" }}>
         <div style={{ padding: 16 }}>
           <h1 style={{ margin: 0 }}>📋 Progress Lite</h1>
           <div style={{ fontSize: 14, opacity: 0.9 }}>
@@ -63,23 +71,25 @@ export default function App() {
           </div>
         </div>
 
-        {/* Tabell – identisk som i full */}
+        {/* Tabell – ekte TableCore */}
         <div style={{ borderTop: "1px solid #2A2E34" }}>
           <TableCore columns={DEMO_COLUMNS as any} rows={rows} onPatch={onPatch} />
         </div>
 
         {/* (Plass for statisk Gantt i Lite – kommer) */}
-        <div style={{ borderTop: "1px solid #2A2E34", display: "grid", placeItems: "center", color: "#888" }}>
+        <div style={{ borderTop: "1px solid #2A2E34", display: "grid", placeItems: "center", color: "#888", height: 240 }}>
           (Statisk Gantt for utskrift – kommer)
         </div>
       </div>
     );
   }
 
-  // ---- FULL-MODUS: banner + toolbar (placeholder nå) + tabell + (senere) gantt
+  // ---- FULL-MODUS: banner + toolbar + tabell + (senere) gantt
   return (
     <div className="progress-full-mode" style={{ display: "grid", gridTemplateRows: "auto auto 1fr auto", height: "100%" }}>
       <ProjectInfoBanner />
+
+      {/* Ekte ToolbarCore – krever deps, se steg 3 */}
       <ToolbarCore />
 
       <div style={{ borderTop: "1px solid #2A2E34" }}>
