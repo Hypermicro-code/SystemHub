@@ -1,25 +1,43 @@
 // ==== [BLOCK: TopbarIndicator] BEGIN ====
 import React from "react";
 
-function useOptionalProgressCtx(): { projectId?: string; mode?: string } {
+type Ctx = { projectId?: string; mode?: "lite" | "full" };
+
+function readCtx(): Ctx {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const mod = require("../../../../apps/progress/src/context/ProgressContext");
-    if (mod && typeof mod.useProgressCtx === "function") {
-      return mod.useProgressCtx();
+    const api = (window as any).mclProgress;
+    if (api?.getContext) {
+      const c = api.getContext();
+      return { projectId: c.projectId, mode: c.mode };
     }
-  } catch {
-    /* tom */
-  }
-  return {};
+  } catch {}
+  // Fallback til URL (fungerer i Progress uten provider)
+  const qs = new URLSearchParams(window.location.search);
+  const projectId = qs.get("projectId") ?? undefined;
+  const mode = (qs.get("mode") as "lite" | "full" | null) ?? undefined;
+  return { projectId, mode };
 }
 
 export function TopbarIndicator() {
-  const { projectId, mode } = useOptionalProgressCtx();
+  const [ctx, setCtx] = React.useState<Ctx>(() => readCtx());
+
+  React.useEffect(() => {
+    const onCtx = (e: Event) => {
+      const detail = (e as CustomEvent).detail || {};
+      setCtx({ projectId: detail.projectId, mode: detail.mode });
+    };
+    window.addEventListener("mcl:progress:ctx", onCtx);
+    // liten init i tilfelle provider kom senere
+    const t = setTimeout(() => setCtx(readCtx()), 0);
+    return () => {
+      window.removeEventListener("mcl:progress:ctx", onCtx);
+      clearTimeout(t);
+    };
+  }, []);
 
   const label =
-    projectId || mode
-      ? `${projectId ?? "Ukjent prosjekt"}  |  ${mode === "lite" ? "Lite-modus" : "Full-modus"}`
+    ctx.projectId || ctx.mode
+      ? `${ctx.projectId ?? "Ukjent prosjekt"}  |  ${ctx.mode === "lite" ? "Lite-modus" : "Full-modus"}`
       : "Ingen aktivt prosjekt";
 
   return (
