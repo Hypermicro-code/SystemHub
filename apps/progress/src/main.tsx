@@ -32,12 +32,13 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         <HubView />
       </ShellLayout>
     ) : (
-      <ShellLayout chrome="app">
-        <ProgressProvider>
+      // ⬇⬇⬇ ProgressProvider FLYTTES UTENPÅ ShellLayout:
+      <ProgressProvider>
+        <ShellLayout chrome="app">
           <LiteBadge />
           <App />
-        </ProgressProvider>
-      </ShellLayout>
+        </ShellLayout>
+      </ProgressProvider>
     )}
   </React.StrictMode>
 );
