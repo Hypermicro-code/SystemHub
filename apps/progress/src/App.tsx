@@ -1,24 +1,22 @@
 // ==== [BLOCK: Imports] BEGIN ====
 import React from "react";
 import { useProgressCtx } from "./context/ProgressContext";
-// Vi antar at du allerede har TableCore og Gantt mountet i App.
-// Hvis ikke, fungerer dette fortsatt — du får bare presentasjonsdelen synlig.
 import { TableCore } from "../../../packages/table-core/src/TableCore";
 import { ToolbarCore } from "../../../packages/toolbar-core/src/ToolbarCore";
+import { ProjectInfoBanner } from "./ux/ProjectInfoBanner";
 // ==== [BLOCK: Imports] END ====
 
 // ==== [BLOCK: Component] BEGIN ====
 export default function App() {
   const { mode, projectId, orgId, locale } = useProgressCtx();
 
-  // Lite-modus → presentasjonsvisning
+  // ---- LITE-MODUS: Presentasjonsvisning (ingen tabell/gantt/redigering)
   if (mode === "lite") {
     return (
       <div
         style={{
           padding: 24,
           color: "#EAECEF",
-          fontFamily: "Inter, sans-serif",
           display: "grid",
           gap: 16,
         }}
@@ -42,11 +40,7 @@ export default function App() {
           Gantt / tabell / redigering er slått av i Lite-modus.
         </div>
         <div>
-          <a
-            href="./"
-            className="mcl-btn"
-            style={{ textDecoration: "none" }}
-          >
+          <a href="./" className="mcl-btn" style={{ textDecoration: "none" }}>
             Gå til full modus
           </a>
         </div>
@@ -54,10 +48,14 @@ export default function App() {
     );
   }
 
-  // Full-modus → normal app (tabell + toolbar + gantt)
+  // ---- FULL-MODUS: Normal app med toolbar + tabell + (senere) gantt
   return (
     <div className="progress-full-mode" style={{ display: "grid", height: "100%" }}>
+      {/* NYTT: Prosjektinfo-banner i full-modus */}
+      <ProjectInfoBanner />
+
       <ToolbarCore />
+
       <div style={{ display: "grid", gridTemplateRows: "1fr 300px", height: "100%" }}>
         <TableCore />
         <div
