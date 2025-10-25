@@ -13,6 +13,9 @@ function ShellLayout({
   showSidebar?: boolean;
   children: React.ReactNode;
 }) {
+  const isHub = chrome === "shell";
+  const base = "./?view=hub";
+
   return (
     <div
       style={{
@@ -35,14 +38,14 @@ function ShellLayout({
         }}
       >
         <div style={{ fontWeight: 600 }}>
-          {chrome === "shell" ? "Manage Plattform" : "Manage Progress"}
+          {isHub ? "Manage Plattform" : "Manage Progress"}
         </div>
         <TopbarIndicator />
       </header>
 
       {/* === Hovedinnhold === */}
       <div style={{ display: "flex", flex: 1 }}>
-        {showSidebar && (
+        {isHub && showSidebar && (
           <aside
             style={{
               width: 220,
@@ -55,12 +58,12 @@ function ShellLayout({
             <div style={{ opacity: 0.8, fontSize: 13, marginBottom: 6 }}>
               Navigasjon
             </div>
-            <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-              <li>🏠 Oversikt</li>
-              <li>📁 Prosjekter</li>
-              <li>📊 Rapporter</li>
-              <li>👥 Organisasjon</li>
-            </ul>
+            <nav style={{ display: "grid", gap: 6 }}>
+              <a className="mcl-nav-link" href={`${base}&page=dashboard`}>🏠 Oversikt</a>
+              <a className="mcl-nav-link" href={`${base}&page=projects`}>📁 Prosjekter</a>
+              <a className="mcl-nav-link" href={`${base}&page=reports`}>📊 Rapporter</a>
+              <a className="mcl-nav-link" href={`${base}&page=org`}>👥 Organisasjon</a>
+            </nav>
           </aside>
         )}
         <main style={{ flex: 1, overflow: "auto" }}>{children}</main>
