@@ -1,79 +1,93 @@
 // ==== [BLOCK: Imports] BEGIN ====
 import React from "react";
 import { useProgressCtx } from "./context/ProgressContext";
-import { TableCore } from "../../../packages/table-core/src/TableCore";
-import { ToolbarCore } from "../../../packages/toolbar-core/src/ToolbarCore";
+import TableCore from "../../../packages/table-core/src/TableCore"; // ⬅ default import
 import { ProjectInfoBanner } from "./ux/ProjectInfoBanner";
+import { ToolbarCore } from "../../../packages/toolbar-core/src/ToolbarCore"; // placeholder inntil full integrasjon
 // ==== [BLOCK: Imports] END ====
+
+// ==== [BLOCK: Demo Data] BEGIN ====
+// Felles kolonnedefinisjoner for Lite + Full
+const DEMO_COLUMNS = [
+  { id: "name",      header: "Aktivitet",  type: "text",   width: 220 },
+  { id: "start",     header: "Start",      type: "date",   width: 140 },
+  { id: "end",       header: "Slutt",      type: "date",   width: 140 },
+  { id: "duration",  header: "Varighet",   type: "number", width: 110, validate: (v: any)=> (v>=0 ? null : "≥ 0") },
+  { id: "owner",     header: "Ansvarlig",  type: "select", width: 160, options: [
+      { value: "team-a", label: "Team A" },
+      { value: "team-b", label: "Team B" },
+      { value: "ext",    label: "Ekstern" },
+    ] },
+  { id: "status",    header: "Status %",   type: "number", width: 120, validate: (v: any)=> (v>=0 && v<=100 ? null : "0–100") },
+  { id: "color",     header: "Farge",      type: "color",  width: 90 },
+] as const;
+
+function mkRow(id: string, name: string, start: string, end: string, duration: number, owner: string, status: number, color: string) {
+  return { id, name, start, end, duration, owner, status, color };
+}
+const DEMO_ROWS_INITIAL = [
+  mkRow("r1", "Oppstart / plan", "2025-01-06", "2025-01-10", 5, "team-a", 100, "#66ccff"),
+  mkRow("r2", "Prosjektering",   "2025-01-13", "2025-02-21", 30, "team-b",  45, "#ffaa66"),
+  mkRow("r3", "Innkjøp",         "2025-02-03", "2025-02-14", 10, "ext",     15, "#cc99ff"),
+  mkRow("r4", "Montasje",        "2025-03-03", "2025-03-28", 20, "team-a",   0, "#aaff99"),
+];
+// ==== [BLOCK: Demo Data] END ====
 
 // ==== [BLOCK: Component] BEGIN ====
 export default function App() {
-  const { mode, projectId, orgId, locale } = useProgressCtx();
+  const { mode } = useProgressCtx();
+  const [rows, setRows] = React.useState(DEMO_ROWS_INITIAL);
 
-  // ---- LITE-MODUS: Presentasjonsvisning (ingen tabell/gantt/redigering)
+  const onPatch = (patch: { rowId: string; colId: string; oldValue: any; nextValue: any }) => {
+    setRows(prev => prev.map(r => (r.id === patch.rowId ? { ...r, [patch.colId]: patch.nextValue } : r)));
+  };
+
+  // ---- LITE-MODUS: presentasjon + utskrift (ingen lagring, men full tabell)
   if (mode === "lite") {
     return (
-      <div className="progress-print-root" style={{ padding: 24, color: "#EAECEF", display: "grid", gap: 16 }}>
-        <h1 style={{ margin: 0 }}>📋 Progress Lite</h1>
-
-        <div className="progress-lite-info" style={{ fontSize: 14, opacity: 0.9 }}>
-          <p><b>Prosjekt ID:</b> {projectId ?? "(ukjent)"}</p>
-          <p><b>Organisasjon:</b> {orgId ?? "(demo-org)"}</p>
-          <p><b>Språk:</b> {locale ?? "nb-NO"}</p>
-          <p><b>Modus:</b> Lite-visning (redigering deaktivert)</p>
+      <div className="progress-print-root" style={{ display: "grid", gridTemplateRows: "auto auto 1fr", height: "100%" }}>
+        <div style={{ padding: 16 }}>
+          <h1 style={{ margin: 0 }}>📋 Progress Lite</h1>
+          <div style={{ fontSize: 14, opacity: 0.9 }}>
+            <p><b>Merk:</b> Data lagres ikke i Lite – skriv ut/eksporter til PDF.</p>
+          </div>
+          <div style={{ display: "flex", gap: 8 }}>
+            <a
+              href={(() => { const u = new URL(window.location.href); u.searchParams.set("mode","full"); return u.pathname + "?" + u.searchParams.toString(); })()}
+              className="mcl-btn no-print"
+              style={{ textDecoration: "none" }}
+            >
+              Gå til full modus
+            </a>
+            <button className="mcl-btn no-print" onClick={() => window.print()}>Eksporter til PDF</button>
+          </div>
         </div>
 
-        <div
-          className="progress-lite-placeholder"
-          style={{ border: "1px dashed #3A4047", padding: 20, background: "#1D2024", opacity: 0.7, textAlign: "center" }}
-        >
-          Gantt / tabell / redigering er slått av i Lite-modus.
-          <br />
-          (Her kommer statisk tidslinje/plan for utskrift)
+        {/* Tabell – identisk som i full */}
+        <div style={{ borderTop: "1px solid #2A2E34" }}>
+          <TableCore columns={DEMO_COLUMNS as any} rows={rows} onPatch={onPatch} />
         </div>
 
-        <div style={{ display: "flex", gap: 8 }}>
-          <a
-            href={(() => { const u = new URL(window.location.href); u.searchParams.set("mode","full"); return u.pathname + "?" + u.searchParams.toString(); })()}
-            className="mcl-btn no-print"
-            style={{ textDecoration: "none" }}
-          >
-
-            Gå til full modus
-          </a>
-          <button
-            className="mcl-btn no-print"
-            onClick={() => window.print()}
-            title="Eksporter til PDF (via utskrift)"
-          >
-            Eksporter til PDF
-          </button>
+        {/* (Plass for statisk Gantt i Lite – kommer) */}
+        <div style={{ borderTop: "1px solid #2A2E34", display: "grid", placeItems: "center", color: "#888" }}>
+          (Statisk Gantt for utskrift – kommer)
         </div>
       </div>
     );
   }
 
-  // ---- FULL-MODUS: Normal app med toolbar + tabell + (senere) gantt
+  // ---- FULL-MODUS: banner + toolbar (placeholder nå) + tabell + (senere) gantt
   return (
-    <div className="progress-full-mode" style={{ display: "grid", height: "100%" }}>
-      {/* Prosjektinfo kun i full-modus */}
+    <div className="progress-full-mode" style={{ display: "grid", gridTemplateRows: "auto auto 1fr auto", height: "100%" }}>
       <ProjectInfoBanner />
-
       <ToolbarCore />
 
-      <div style={{ display: "grid", gridTemplateRows: "1fr 300px", height: "100%" }}>
-        <TableCore />
-        <div
-          style={{
-            borderTop: "1px solid #2A2E34",
-            background: "#101214",
-            display: "grid",
-            placeItems: "center",
-            color: "#888",
-          }}
-        >
-          (Gantt-visning eller tidslinje kommer her)
-        </div>
+      <div style={{ borderTop: "1px solid #2A2E34" }}>
+        <TableCore columns={DEMO_COLUMNS as any} rows={rows} onPatch={onPatch} />
+      </div>
+
+      <div style={{ borderTop: "1px solid #2A2E34", background: "#101214", display: "grid", placeItems: "center", color: "#888", height: 280 }}>
+        (Gantt-visning – dynamisk, kommer)
       </div>
     </div>
   );
