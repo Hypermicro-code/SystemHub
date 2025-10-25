@@ -1,59 +1,69 @@
 // ==== [BLOCK: Imports] BEGIN ====
 import React from "react";
-import { getAppMode } from "../utils/mode";
-import { Topbar } from "./Topbar";
-import { Sidebar } from "./Sidebar";
-import { HelpPanel } from "../components/HelpPanel";
-import { ToastContainer } from "../components/ToastContainer";
+import { TopbarIndicator } from "../topbar/TopbarIndicator";
 // ==== [BLOCK: Imports] END ====
 
-// ==== [BLOCK: Types] BEGIN ====
-export type ChromeMode = "auto" | "shell" | "app";
-export type ShellLayoutProps = {
-  /** App-innhold (Progress etc.) */
-  children: React.ReactNode;
-  /** Når chrome="shell" kan vi vise sidebar i system-mode */
-  showSidebar?: boolean;
-  /**
-   * "app"   = ikke vis Shell-topbar/sidebar (bruk appens egen chrome) [DEFAULT]
-   * "shell" = vis Shell-topbar/sidebar (for Hub)
-   * "auto"  = shell i system-mode, ellers app
-   */
-  chrome?: ChromeMode;
-};
-// ==== [BLOCK: Types] END ====
-
-// ==== [BLOCK: Component] BEGIN ====
 export function ShellLayout({
   children,
-  showSidebar = true,
-  chrome = "app", // Viktig: default "app" for å IKKE overstyre Progress sin chrome
-}: ShellLayoutProps) {
-  const mode = getAppMode(); // "system" | "standalone"
-
-  // Bestem faktisk chrome-modus:
-  const effective: Exclude<ChromeMode, "auto"> =
-    chrome === "auto" ? (mode === "system" ? "shell" : "app") : chrome;
-
-  const isShellChrome = effective === "shell";
-
+  chrome = "app",
+  showSidebar = false,
+}: {
+  children: React.ReactNode;
+  chrome?: "app" | "shell";
+  showSidebar?: boolean;
+}) {
   return (
-    <div className={`mcl-shell ${mode === "system" ? "mode-system" : "mode-standalone"}`}>
-      {/* Shell-topbar kun når vi eksplisitt ber om den */}
-      {isShellChrome && <Topbar />}
+    <div
+      className={`shell-root shell-${chrome}`}
+      style={{
+        display: "grid",
+        gridTemplateRows: "auto 1fr",
+        height: "100vh",
+        background: "#101214",
+        color: "#EAECEF",
+      }}
+    >
+      {/* ==== [BLOCK: Topbar] BEGIN ==== */}
+      <header
+        style={{
+          height: 48,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          background: "#1A1D21",
+          borderBottom: "1px solid #2A2E34",
+          padding: "0 16px",
+        }}
+      >
+        <div style={{ fontWeight: 600 }}>Manage Plattformen</div>
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <TopbarIndicator />
+        </div>
+      </header>
+      {/* ==== [BLOCK: Topbar] END ==== */}
 
-      <div className="mcl-shell-body" style={{ gridTemplateColumns: isShellChrome && showSidebar ? undefined : "1fr" }}>
-        {/* Sidebar kun i shell-chrome */}
-        {isShellChrome && showSidebar && <Sidebar />}
-
-        {/* HOVEDINNHOLD (Progress e.l.) */}
-        <main className="mcl-shell-content">{children}</main>
-      </div>
-
-      {/* Stubs – ingen visuell effekt før vi skrur de på senere */}
-      <HelpPanel />
-      <ToastContainer />
+      {/* ==== [BLOCK: Body] BEGIN ==== */}
+      <main
+        style={{
+          display: "grid",
+          gridTemplateColumns: showSidebar ? "240px 1fr" : "1fr",
+          height: "100%",
+        }}
+      >
+        {showSidebar && (
+          <aside
+            style={{
+              background: "#17181B",
+              borderRight: "1px solid #2A2E34",
+              padding: 12,
+            }}
+          >
+            (Sidebar)
+          </aside>
+        )}
+        <section style={{ overflow: "auto" }}>{children}</section>
+      </main>
+      {/* ==== [BLOCK: Body] END ==== */}
     </div>
   );
 }
-// ==== [BLOCK: Component] END ====
