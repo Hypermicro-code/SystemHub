@@ -6,12 +6,10 @@ import { fileURLToPath } from "node:url";
 // Bruk env-variabel fra workflow (fallback for lokal dev)
 const base = process.env.VITE_BASE || "/";
 
-// Absolutt sti til stubben
+// Absolutte stier (ESM-trygt)
 const here = fileURLToPath(new URL(".", import.meta.url)); // .../apps/progress/
-const reactI18nextShim = path.resolve(
-  here,
-  "../../packages/toolbar-core/src/shims/react-i18next.ts"
-);
+const toolbarSrc = path.resolve(here, "../../packages/toolbar-core/src");
+const reactI18nextShim = path.resolve(toolbarSrc, "shims/react-i18next.ts");
 
 export default defineConfig({
   plugins: [react()],
@@ -22,6 +20,10 @@ export default defineConfig({
   resolve: {
     preserveSymlinks: true,
     alias: {
+      // ← Lar ToolbarCore sin interne import "@/..." fungere
+      "@": toolbarSrc,
+
+      // ← Midlertidig stub til vi setter opp ekte i18n
       "react-i18next": reactI18nextShim,
     },
   },
