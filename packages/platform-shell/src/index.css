@@ -115,3 +115,15 @@ body {
 table th, table td { font-size: 14px; }
 input:focus, button:focus { outline: 1px dashed #3A4047; outline-offset: 1px; }
 /* ==== [BLOCK: Hub table helpers] END ==== */
+/* ==== [BLOCK: Core Theme Variables] BEGIN ==== */
+:root {
+  /* Toolbar */
+  --mc-toolbar-bg: #22252A;
+  --mc-toolbar-fg: #EAECEF;
+  --mc-border-strong: #3A4047;
+
+  /* Table */
+  --mc-table-bg: #15171A;
+  --mc-table-fg: #EAECEF;
+}
+/* ==== [BLOCK: Core Theme Variables] END ==== */
