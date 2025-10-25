@@ -1,4 +1,3 @@
-// ==== [BLOCK: TableCore Dummy] BEGIN ====
 import React from "react";
 
 export function TableCore() {
@@ -6,8 +5,8 @@ export function TableCore() {
     <div
       style={{
         flex: 1,
-        background: "#15171A",
-        color: "#AAA",
+        background: "var(--mc-table-bg)",
+        color: "var(--mc-table-fg)",
         display: "grid",
         placeItems: "center",
       }}
@@ -16,4 +15,3 @@ export function TableCore() {
     </div>
   );
 }
-// ==== [BLOCK: TableCore Dummy] END ====
