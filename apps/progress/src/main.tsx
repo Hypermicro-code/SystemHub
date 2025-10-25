@@ -2,7 +2,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
-import "../../../packages/platform-shell/src/i18n/bootstrap";
 
 /** Shell + global base-css */
 import "../../../packages/platform-shell/src/index.css";
