@@ -1,32 +1,40 @@
 // ==== [BLOCK: TopbarIndicator] BEGIN ====
 import React from "react";
-import { useProgressCtx } from "../../../../apps/progress/src/context/ProgressContext";
+
+// Lazy-import for ikke å krasje når ProgressContext ikke finnes
+function useOptionalProgressCtx(): { projectId?: string; mode?: string } {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const mod = require("../../../../apps/progress/src/context/ProgressContext");
+    if (mod && typeof mod.useProgressCtx === "function") {
+      return mod.useProgressCtx();
+    }
+  } catch {
+    /* tom */
+  }
+  return {};
+}
 
 export function TopbarIndicator() {
-  const { projectId, mode } = useProgressCtx();
+  const { projectId, mode } = useOptionalProgressCtx();
 
-  if (!projectId) return null;
-
-  const bg = mode === "lite" ? "#2D2F33" : "#1E2125";
-  const txt = mode === "lite" ? "#FFD76D" : "#A6E1FA";
+  const label =
+    projectId || mode
+      ? `${projectId ?? "Ukjent prosjekt"}  |  ${mode === "lite" ? "Lite-modus" : "Full-modus"}`
+      : "Ingen aktivt prosjekt";
 
   return (
     <div
       style={{
-        display: "flex",
-        alignItems: "center",
-        gap: 8,
-        background: bg,
-        color: txt,
+        marginLeft: "auto",
+        padding: "4px 12px",
         fontSize: 13,
-        padding: "4px 10px",
-        borderRadius: 4,
-        marginRight: 12,
+        color: "#EAECEF",
+        opacity: 0.9,
       }}
-      title={`Prosjekt ${projectId} – ${mode === "lite" ? "Lite-modus" : "Full-modus"}`}
+      title="Aktivt prosjekt / modus"
     >
-      <span style={{ fontWeight: 600 }}>{projectId}</span>
-      <span style={{ opacity: 0.8 }}>({mode})</span>
+      {label}
     </div>
   );
 }
