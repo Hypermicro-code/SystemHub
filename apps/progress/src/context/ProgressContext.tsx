@@ -38,6 +38,7 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
     mode: initial.mode ?? "full",
   });
 
+  // Persist + broadcast på alle endringer
   React.useEffect(() => {
     safeWriteLS({
       projectId: state.projectId,
@@ -45,6 +46,10 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
       locale: state.locale,
       mode: state.mode,
     });
+    // 🔊 Broadcast til Shell/indikator
+    try {
+      window.dispatchEvent(new CustomEvent("mcl:progress:ctx", { detail: { ...state } }));
+    } catch {}
   }, [state]);
 
   React.useEffect(() => {
