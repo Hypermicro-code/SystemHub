@@ -1,4 +1,3 @@
-// ==== [BLOCK: ToolbarCore Dummy] BEGIN ====
 import React from "react";
 
 export function ToolbarCore() {
@@ -6,16 +5,15 @@ export function ToolbarCore() {
     <div
       style={{
         height: 42,
-        background: "#22252A",
-        color: "#DDD",
+        background: "var(--mc-toolbar-bg)",
+        color: "var(--mc-toolbar-fg)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        borderBottom: "1px solid #2A2E34",
+        borderBottom: "1px solid var(--mc-border-strong)",
       }}
     >
       (ToolbarCore placeholder)
     </div>
   );
 }
-// ==== [BLOCK: ToolbarCore Dummy] END ====
