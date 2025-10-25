@@ -1,0 +1,289 @@
+/* ============================================================================
+   Morning Coffee Labs – Toolbar & Ribbon Core (v1.0 locked)
+   Lys "kaffe med fløte"-tema, flat design, rulleanimasjon, fleksibel bredde
+   ============================================================================ */
+
+/* === Grunnpalett og tokens ================================================= */
+:root {
+  --coffee-bg: #ffffff;
+  --coffee-toolbar: #f5e9da;
+  --coffee-ink: #2c2217;
+  --coffee-muted: #6b6b6b;
+  --coffee-border: #d8c9b8;
+  --coffee-hover: rgba(0,0,0,0.06);
+  --coffee-active: rgba(0,0,0,0.10);
+  --coffee-focus: #d7c7b5;
+
+  --tb-radius: 0px;
+  --menubar-h: 72px;
+  --btn-h: 28px;
+  --btn-icon: 16px;
+  --gap: 6px;
+  --pad: 8px;
+  --font: 13px;
+
+  --toolbar-max-width: none; /* kan overstyres fra app via prop */
+}
+
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; margin: 0; }
+body {
+  background: var(--coffee-bg);
+  color: var(--coffee-ink);
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+  font-size: var(--font);
+}
+
+/* === MENYLINJE (øverste verktøylinje) ===================================== */
+.menubar {
+  position: sticky;
+  top: 0;
+  z-index: 2000;
+  background: var(--coffee-toolbar);
+  color: var(--coffee-ink);
+  border-bottom: 1px solid var(--coffee-border);
+  box-shadow: 0 2px 6px rgba(100, 80, 40, 0.15);
+  backdrop-filter: blur(2px);
+  display: block;
+}
+
+/* Innholdet begrenses og sentreres etter --toolbar-max-width */
+.menubar > .menubar-inner {
+  max-width: var(--toolbar-max-width);
+  margin: 0 auto;
+  height: var(--menubar-h);
+  padding: 0 var(--pad);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+}
+
+.menu-tabs { display: flex; align-items: center; gap: 2px; }
+
+.menu-tab {
+  appearance: none;
+  background: transparent;
+  border: 1px solid transparent;
+  border-bottom: 2px solid transparent;
+  border-radius: var(--tb-radius);
+  height: calc(var(--menubar-h) - 16px);
+  padding: 0 12px;
+  color: var(--coffee-ink);
+  cursor: pointer;
+  font-size: 14px;
+}
+.menu-tab:hover { background: var(--coffee-hover); }
+.menu-tab[aria-selected="true"],
+.menu-tab[aria-pressed="true"] {
+  border-color: var(--coffee-border);
+  border-bottom-color: var(--coffee-ink);
+  font-weight: 600;
+}
+.menu-tab:focus-visible {
+  outline: 2px solid var(--coffee-focus);
+  outline-offset: 2px;
+}
+
+.menu-right { display: flex; align-items: center; gap: 8px; }
+.menu-logo {
+  display: inline-flex; align-items: center; gap: 6px;
+  color: var(--coffee-ink); font-weight: 600;
+}
+.menu-logo img { height: 28px; width: auto; }
+
+/* === KNAPPER (felles toolbar + ribbon) ==================================== */
+.tb-btn,
+.menubar .btn,
+.ribbon .btn,
+.ribbon button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: var(--btn-h);
+  padding: 0 10px;
+  background: transparent;
+  color: var(--coffee-ink);
+  border: 1px solid transparent;
+  border-radius: var(--tb-radius);
+  cursor: pointer;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: none;
+  transition: background-color 120ms ease, border-color 120ms ease, transform 60ms ease;
+}
+.tb-btn:hover,
+.menubar .btn:hover,
+.ribbon .btn:hover,
+.ribbon button:hover {
+  border-color: var(--coffee-border);
+  background: var(--coffee-hover);
+}
+.tb-btn:active,
+.menubar .btn:active,
+.ribbon .btn:active,
+.ribbon button:active {
+  border-color: var(--coffee-border);
+  background: var(--coffee-active);
+  transform: translateY(1px);
+}
+.tb-btn:disabled,
+.menubar .btn:disabled,
+.ribbon .btn:disabled,
+.ribbon button:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+  background: transparent;
+}
+.tb-btn:focus-visible,
+.menubar .btn:focus-visible,
+.ribbon .btn:focus-visible,
+.ribbon button:focus-visible {
+  border-color: var(--coffee-border);
+  outline: 2px solid var(--coffee-focus);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 1px var(--coffee-border) inset;
+}
+.tb-icon { width: var(--btn-icon); height: var(--btn-icon); display: inline-flex; }
+
+/* Hover-animasjon på ikon */
+.tb-btn:hover .tb-icon,
+.ribbon .btn:hover .tb-icon,
+.menubar .btn:hover .tb-icon {
+  transform: translateY(-1px);
+  transition: transform 120ms ease;
+}
+.tb-btn:active .tb-icon,
+.ribbon .btn:active .tb-icon,
+.menubar .btn:active .tb-icon {
+  transform: translateY(0);
+  transition: transform 60ms ease;
+}
+
+/* Toggle-tilstand */
+.tb-btn[aria-pressed="true"],
+.ribbon button[aria-pressed="true"] {
+  background: var(--coffee-active);
+  border-color: var(--coffee-border);
+}
+
+/* === STATUS / INPUTS ====================================================== */
+.status-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: var(--btn-h);
+  padding: 0 8px;
+  border: 1px solid var(--coffee-border);
+  background: transparent;
+  color: var(--coffee-muted);
+  border-radius: var(--tb-radius);
+}
+.status-dot { width: 8px; height: 8px; border-radius: 50%; background: #c9c9c9; }
+.status-ok { background: #22c55e; }
+.status-off { background: #ef4444; }
+
+input[type="text"], input[type="search"] {
+  background: transparent;
+  color: var(--coffee-ink);
+  border: 1px solid var(--coffee-border);
+  border-radius: var(--tb-radius);
+  height: var(--btn-h);
+  padding: 0 8px;
+}
+
+/* === RIBBON (flat, overlay, sømløs) ====================================== */
+.ribbon {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: var(--menubar-h);
+  z-index: 1999;
+  background: var(--coffee-toolbar);
+  color: var(--coffee-ink);
+  border-bottom: 1px solid var(--coffee-border);
+  transform-origin: top;
+  transform: translateY(0) scaleY(1);
+  opacity: 1;
+  will-change: transform, opacity, box-shadow;
+  transition: transform 240ms cubic-bezier(.2,.8,.2,1),
+              opacity 180ms ease 40ms,
+              box-shadow 200ms ease;
+  box-shadow: 0 2px 6px rgba(100, 80, 40, 0.15);
+  backdrop-filter: blur(2px);
+}
+
+.ribbon > .ribbon-inner {
+  max-width: var(--toolbar-max-width);
+  margin: 0 auto;
+  padding: 6px var(--pad);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--gap);
+  justify-content: flex-start;
+  text-align: left;
+}
+
+/* LUKKING / SKJULT ======================================================== */
+.ribbon.ribbon--closing {
+  transform: translateY(-12px) scaleY(.84);
+  opacity: 0;
+  pointer-events: none;
+  box-shadow: none;
+}
+.ribbon.ribbon--hidden {
+  opacity: 0;
+  transform: translateY(-12px) scaleY(.84);
+  pointer-events: none;
+  box-shadow: none;
+  border-bottom: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  overflow: hidden;
+}
+
+/* Ikon-fade når ribbon åpnes */
+.ribbon .tb-icon {
+  opacity: 0;
+  transform: translateY(-2px);
+  transition: transform 200ms cubic-bezier(.2,.8,.2,1),
+              opacity 160ms ease;
+  will-change: transform, opacity;
+}
+.ribbon:not(.ribbon--hidden):not(.ribbon--closing) .tb-icon {
+  opacity: 1;
+  transform: none;
+  transition-delay: 60ms;
+}
+
+/* Sømløst topplag (toolbar + ribbon) */
+html.ribbon-open .menubar {
+  border-bottom: 0 !important;
+  box-shadow: none !important;
+}
+html.ribbon-open .ribbon {
+  border-top: 0 !important;
+  box-shadow: 0 2px 6px rgba(100, 80, 40, 0.15);
+}
+.menubar:has(+ .ribbon:not(.ribbon--hidden)) {
+  border-bottom: 0 !important;
+  box-shadow: none !important;
+}
+
+/* === Tilgjengelighet og systempreferanser ================================ */
+@media (pointer: coarse) {
+  :root { --btn-h: 34px; }
+  .menu-tab { height: calc(var(--menubar-h) - 12px); }
+}
+@media (prefers-contrast: more) {
+  :root {
+    --coffee-border: #b89f88;
+    --coffee-hover: rgba(0,0,0,0.12);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tb-btn, .menubar .btn, .ribbon .btn, .ribbon button,
+  .ribbon .tb-icon { transition: none !important; transform: none !important; }
+}
+
+/* === Demo-side-padding ==================================================== */
+.page { padding: 12px; }
