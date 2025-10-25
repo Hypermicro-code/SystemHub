@@ -13,36 +13,36 @@ export default function App() {
   // ---- LITE-MODUS: Presentasjonsvisning (ingen tabell/gantt/redigering)
   if (mode === "lite") {
     return (
-      <div
-        style={{
-          padding: 24,
-          color: "#EAECEF",
-          display: "grid",
-          gap: 16,
-        }}
-      >
+      <div className="progress-print-root" style={{ padding: 24, color: "#EAECEF", display: "grid", gap: 16 }}>
         <h1 style={{ margin: 0 }}>📋 Progress Lite</h1>
-        <div style={{ fontSize: 14, opacity: 0.9 }}>
+
+        <div className="progress-lite-info" style={{ fontSize: 14, opacity: 0.9 }}>
           <p><b>Prosjekt ID:</b> {projectId ?? "(ukjent)"}</p>
           <p><b>Organisasjon:</b> {orgId ?? "(demo-org)"}</p>
           <p><b>Språk:</b> {locale ?? "nb-NO"}</p>
           <p><b>Modus:</b> Lite-visning (redigering deaktivert)</p>
         </div>
+
         <div
-          style={{
-            border: "1px dashed #3A4047",
-            padding: 20,
-            background: "#1D2024",
-            opacity: 0.7,
-            textAlign: "center",
-          }}
+          className="progress-lite-placeholder"
+          style={{ border: "1px dashed #3A4047", padding: 20, background: "#1D2024", opacity: 0.7, textAlign: "center" }}
         >
           Gantt / tabell / redigering er slått av i Lite-modus.
+          <br />
+          (Her kommer statisk tidslinje/plan for utskrift)
         </div>
-        <div>
-          <a href="./" className="mcl-btn" style={{ textDecoration: "none" }}>
+
+        <div style={{ display: "flex", gap: 8 }}>
+          <a href="./" className="mcl-btn no-print" style={{ textDecoration: "none" }}>
             Gå til full modus
           </a>
+          <button
+            className="mcl-btn no-print"
+            onClick={() => window.print()}
+            title="Eksporter til PDF (via utskrift)"
+          >
+            Eksporter til PDF
+          </button>
         </div>
       </div>
     );
@@ -51,7 +51,7 @@ export default function App() {
   // ---- FULL-MODUS: Normal app med toolbar + tabell + (senere) gantt
   return (
     <div className="progress-full-mode" style={{ display: "grid", height: "100%" }}>
-      {/* NYTT: Prosjektinfo-banner i full-modus */}
+      {/* Prosjektinfo kun i full-modus */}
       <ProjectInfoBanner />
 
       <ToolbarCore />
