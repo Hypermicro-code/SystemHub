@@ -8,5 +8,13 @@ export default defineConfig({
   plugins: [react()],
   base,
   server: { port: 5173 },
-  build: { outDir: "dist" }
+  build: { outDir: "dist" },
+
+  // 👇 Legg til dette
+  resolve: {
+    preserveSymlinks: true,
+    alias: {
+      i18next: require.resolve("i18next"),
+    },
+  },
 });
