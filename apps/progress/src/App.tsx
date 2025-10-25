@@ -33,7 +33,12 @@ export default function App() {
         </div>
 
         <div style={{ display: "flex", gap: 8 }}>
-          <a href="./" className="mcl-btn no-print" style={{ textDecoration: "none" }}>
+          <a
+            href={(() => { const u = new URL(window.location.href); u.searchParams.set("mode","full"); return u.pathname + "?" + u.searchParams.toString(); })()}
+            className="mcl-btn no-print"
+            style={{ textDecoration: "none" }}
+          >
+
             Gå til full modus
           </a>
           <button
