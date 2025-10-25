@@ -6,7 +6,7 @@ import { useProgressCtx } from "./context/ProgressContext";
 import TableCore from "../../../packages/table-core/src/TableCore";
 
 /** Ekte ToolbarCore fra pakken din */
-import ToolbarCore from "../../../packages/toolbar-core/src/ToolbarCore";
+import TableCore from "../../../packages/table-core/src/core/TableCore";
 
 /** Banneren vi lagde for Full-modus */
 import { ProjectInfoBanner } from "./ux/ProjectInfoBanner";
