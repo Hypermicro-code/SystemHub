@@ -5,6 +5,7 @@ import App from "./App";
 
 /** Shell + global base-css */
 import "../../../packages/platform-shell/src/index.css";
+import "./print.css";
 import { ShellLayout } from "../../../packages/platform-shell/src/layout/ShellLayout";
 
 /** Hub-view (for Hub-rute) */
