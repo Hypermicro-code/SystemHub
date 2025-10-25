@@ -3,7 +3,8 @@ import React from "react";
 import { useProgressCtx } from "./context/ProgressContext";
 
 /** Ekte TableCore fra pakken din */
-import TableCore from "../../../packages/table-core/src/TableCore";
+import * as ToolbarCoreMod from "../../../packages/toolbar-core/src/ToolbarCore";
+const ToolbarCore = (ToolbarCoreMod as any).default ?? (ToolbarCoreMod as any).ToolbarCore;
 
 /** Ekte ToolbarCore fra pakken din */
 import TableCore from "../../../packages/table-core/src/core/TableCore";
