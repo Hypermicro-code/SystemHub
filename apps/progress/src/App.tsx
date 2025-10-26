@@ -257,13 +257,12 @@ export default function App() {
     </div>
   );
 
-  if (mode === "lite") {
-    return (
-      <div className="progress-print-root" style={{ display: "grid", gridTemplateRows: "auto auto 1fr auto", height: "100%" }}>
-        <div style={{ padding: 16 }}>
-          <h1 style={{ margin: 0 }}>📋 Progress Lite</h1>
-          <div style={{ fontSize: 14, opacity: 0.9 }}>
-            <p><b>Merk:</b> Data lagres ikke i Lite – skriv ut/eksporter til PDF.</p>
+ const liteView = (
+    <div className="progress-print-root" style={{ display: "grid", gridTemplateRows: "auto auto 1fr auto", height: "100%" }}>
+      <div style={{ padding: 16 }}>
+        <h1 style={{ margin: 0 }}>📋 Progress Lite</h1>
+        <div style={{ fontSize: 14, opacity: 0.9 }}>
+          <p><b>Merk:</b> Data lagres ikke i Lite – skriv ut/eksporter til PDF.</p>
           </div>
           <div style={{ display: "flex", gap: 8 }}>
             <a
@@ -298,9 +297,8 @@ export default function App() {
         </div>
       </div>
     );
-  }
 
-  return (
+  const fullView = (
     <div className="progress-full-mode" style={{ display: "grid", gridTemplateRows: "auto auto 1fr auto", height: "100%" }}>
       <ProjectInfoBanner />
 
@@ -326,4 +324,6 @@ export default function App() {
       {ganttSection}
     </div>
   );
+      
+  return mode === "lite" ? liteView : fullView;
 }
