@@ -1,346 +1,138 @@
-import React from "react";
-import { useProgressCtx } from "./context/ProgressContext";
-import {
-  ToolbarCore,
-  registerCommands,
-  unregisterCommand,
-  type SlotInjection,
-  type ToolbarContext,
-} from "@hypermicro-code/toolbar-core";
-import { TableCore, type ColumnDef, type RowLike } from "@hypermicro-code/table-core";
-import { useShell } from "@hypermicro-code/platform-shell";
-import { ProjectInfoBanner } from "./ux/ProjectInfoBanner";
-const ICONS = {
-  add: "➕",
-  clear: "🧹",
-  log: "🗒️",
-  gantt: "📈",
-  timescale: "🕒",
-  vat: "💸",
-};
+/* ============================================
+   Manage Progress / SystemHub
+   App.tsx – Lite & Full moduser uten i18n
+   - Viser ToolbarCore + TableCore i begge moduser
+   - GanttPlaceholder (statisk)
+   - Print-støtte i Lite
+   - Null lagring i denne fasen (Lite skjuler/nekter)
+   ============================================ */
 
-const DEMO_COLUMNS: ColumnDef<RowLike>[] = [
-  { id: "name", header: "Aktivitet", type: "text", width: 220 },
-  { id: "start", header: "Start", type: "date", width: 140 },
-  { id: "end", header: "Slutt", type: "date", width: 140 },
-  { id: "duration", header: "Varighet", type: "number", width: 110, validate: (v: any) => (v >= 0 ? undefined : new Error("≥ 0")) },
-  {
-    id: "owner",
-    header: "Ansvarlig",
-    type: "select",
-    width: 160,
-    options: [
-      { value: "team-a", label: "Team A" },
-      { value: "team-b", label: "Team B" },
-      { value: "ext", label: "Ekstern" },
-    ],
-  },
-  {
-    id: "status",
-    header: "Status %",
-    type: "number",
-    width: 120,
-    validate: (v: any) => (v >= 0 && v <= 100 ? undefined : new Error("0–100")),
-  },
-  { id: "color", header: "Farge", type: "color", width: 90 },
-];
+import React, { useMemo } from "react"
 
-function mkRow(
-  id: string,
-  name: string,
-  start: string,
-  end: string,
-  duration: number,
-  owner: string,
-  status: number,
-  color: string,
-): RowLike {
-  return { id, name, start, end, duration, owner, status, color };
+/* ==== [BLOCK: Robust imports] BEGIN ==== */
+/** TableCore: relativ sti fra /apps/progress/src → /packages/table-core */
+import * as TableCoreMod from "../../../packages/table-core/src/core/TableCore"
+
+/** ToolbarCore: alias @ peker til /packages/toolbar-core/src (se vite.config.ts) */
+import * as ToolbarCoreMod from "@/core/ToolbarCore"
+
+/** Lokale komponenter */
+import ProjectInfoBanner from "./components/ProjectInfoBanner"
+import GanttPlaceholder from "./components/GanttPlaceholder"
+import "./print.css"
+
+/** Tolerant fabrikk for default/navngitt eksport */
+const pickExport = (m: any, key?: string) =>
+  (m && (m.default ?? (key ? m[key] : undefined) ?? m)) || null
+
+const TableCore = pickExport(TableCoreMod, "TableCore") as any
+const ToolbarCore = pickExport(ToolbarCoreMod, "ToolbarCore") as any
+/* ==== [BLOCK: Robust imports] END ==== */
+
+/* ==== [BLOCK: Mode detection] BEGIN ==== */
+type Mode = "lite" | "full"
+const getMode = (): Mode => {
+  const sp = new URLSearchParams(window.location.search)
+  const m = (sp.get("mode") || "").toLowerCase()
+  return m === "lite" ? "lite" : "full"
 }
+/* ==== [BLOCK: Mode detection] END ==== */
 
-const DEMO_ROWS_INITIAL: RowLike[] = [
-  mkRow("r1", "Oppstart / plan", "2025-01-06", "2025-01-10", 5, "team-a", 100, "#66ccff"),
-  mkRow("r2", "Prosjektering", "2025-01-13", "2025-02-21", 30, "team-b", 45, "#ffaa66"),
-  mkRow("r3", "Innkjøp", "2025-02-03", "2025-02-14", 10, "ext", 15, "#cc99ff"),
-  mkRow("r4", "Montasje", "2025-03-03", "2025-03-28", 20, "team-a", 0, "#aaff99"),
-];
+/* ==== [BLOCK: Demo data (midlertidig)] BEGIN ==== */
+type Row = { id: string; aktivitet: string; start: string; slutt: string; farge?: string }
 
+const INITIAL_ROWS: Row[] = [
+  { id: "1", aktivitet: "Kickoff",          start: "2025-11-03", slutt: "2025-11-03", farge: "#7ea1" },
+  { id: "2", aktivitet: "Designfase",       start: "2025-11-04", slutt: "2025-11-14", farge: "#6ab3" },
+  { id: "3", aktivitet: "Bygg & test",      start: "2025-11-17", slutt: "2025-12-05", farge: "#49c8" },
+  { id: "4", aktivitet: "Overlevering",     start: "2025-12-08", slutt: "2025-12-10", farge: "#f9a3" },
+]
+/* ==== [BLOCK: Demo data (midlertidig)] END ==== */
+
+/* ==== [BLOCK: Fallback UI] BEGIN ==== */
+/** Om TableCore/ToolbarCore ikke kan lastes, vis enkel fallback */
+const Missing = ({ what }: { what: string }) => (
+  <div style={{ padding: 12, border: "1px dashed #999", borderRadius: 8, margin: "8px 0" }}>
+    <strong>{what}</strong> ikke tilgjengelig (sjekk import/sti).
+  </div>
+)
+/* ==== [BLOCK: Fallback UI] END ==== */
+
+/* ==== [BLOCK: App] BEGIN ==== */
 export default function App() {
-  const { mode } = useProgressCtx();
-  const { pushToast } = useShell();
+  const mode = useMemo(getMode, [])
+  const isLite = mode === "lite"
 
-  const [rows, setRows] = React.useState<RowLike[]>(DEMO_ROWS_INITIAL);
-  const [online, setOnline] = React.useState(true);
-  const [dirty, setDirty] = React.useState(false);
-  const [showGantt, setShowGantt] = React.useState(true);
+  /** Lite: skjul/nekter lagring. Full: klargjort for senere wiring. */
+  const toolbarProps = useMemo(() => {
+    if (!ToolbarCore) return {}
+    return (isLite
+      ? { mode: "lite", allowSave: false, onSave: undefined }
+      : { mode: "full", allowSave: true, onSave: () => {/* wiring i neste etappe */} }
+    )
+  }, [isLite])
 
-  const rowsRef = React.useRef(rows);
-  React.useEffect(() => {
-    rowsRef.current = rows;
-  }, [rows]);
-
-  const showGanttRef = React.useRef(showGantt);
-  React.useEffect(() => {
-    showGanttRef.current = showGantt;
-  }, [showGantt]);
-
-  const pushToastRef = React.useRef(pushToast);
-  React.useEffect(() => {
-    pushToastRef.current = pushToast;
-  }, [pushToast]);
-
-  const toolbarCtx = React.useMemo<ToolbarContext>(() => ({
-    role: "admin",
-    online,
-    dirty,
-    zoom: 1,
-    density: "comfortable",
-    app: "progress",
-  }), [online, dirty]);
-
-  const addRowRef = React.useRef<() => void>(() => {});
-  const clearRowsRef = React.useRef<() => void>(() => {});
-  const logRowsRef = React.useRef<() => void>(() => {});
-  const toggleGanttRef = React.useRef<() => void>(() => {});
-
-  addRowRef.current = () => {
-    const next: RowLike[] = [
-      ...rowsRef.current,
-      { id: `r${String(rowsRef.current.length + 1).padStart(2, "0")}`, name: "Ny aktivitet", start: "", end: "", duration: 0, owner: "team-a", status: 0, color: "#4b9cff" },
-    ];
-    setRows(next);
-    setDirty(true);
-    pushToastRef.current?.("La til ny aktivitet");
-  };
-
-  clearRowsRef.current = () => {
-    setRows([]);
-    setDirty(true);
-    pushToastRef.current?.("Tabell tømt");
-  };
-
-  logRowsRef.current = () => {
-    console.log("[Progress/Table] columns:", DEMO_COLUMNS, "rows:", rowsRef.current);
-    pushToastRef.current?.("Data logget i Console");
-  };
-
-  toggleGanttRef.current = () => {
-    setShowGantt((v) => !v);
-  };
-
-  React.useEffect(() => {
-    const commands = [
-      {
-        id: "progress.addRow",
-        label: "Ny aktivitet",
-        icon: ICONS.add,
-        group: "progress",
-        run: () => addRowRef.current(),
+  /** TableCore props – redigerbar i begge (ingen lagring ennå) */
+  const tableProps = useMemo(() => {
+    if (!TableCore) return {}
+    return {
+      rows: INITIAL_ROWS,
+      editable: true,
+      onRowsChange: (_next: Row[]) => {
+        // Bevisst tom i denne fasen (ingen lagring).
+        // Wiring til persistering kommer i neste etappe.
       },
-      {
-        id: "progress.clearRows",
-        label: "Tøm tabell",
-        icon: ICONS.clear,
-        group: "progress",
-        run: () => clearRowsRef.current(),
-        isEnabled: () => rowsRef.current.length > 0,
-      },
-      {
-        id: "progress.logData",
-        label: "Logg data",
-        icon: ICONS.log,
-        group: "progress",
-        run: () => logRowsRef.current(),
-      },
-      {
-        id: "progress.toggleGantt",
-        label: "Gantt",
-        icon: ICONS.gantt,
-        group: "progress",
-        run: () => toggleGanttRef.current(),
-        pressed: () => showGanttRef.current,
-      },
-      {
-        id: "planning.timescale",
-        label: "Timeskala",
-        icon: ICONS.timescale,
-        group: "planning",
-        run: () => pushToastRef.current?.("Timeskala (demo)") ?? void 0,
-      },
-      {
-        id: "estimates.vat",
-        label: "MVA-profil",
-        icon: ICONS.vat,
-        group: "estimates",
-        run: () => pushToastRef.current?.("MVA-profil (demo)") ?? void 0,
-      },
-    ];
+    }
+  }, [])
 
-    registerCommands(commands);
-    return () => {
-      commands.forEach((cmd) => unregisterCommand(cmd.id));
-    };
-  }, []);
+  /** Print i Lite: skjuler krom via print.css */
+  const handlePrint = () => window.print()
 
-  const slots = React.useMemo<SlotInjection[]>(() => [
-    {
-      tab: "Project",
-      area: "center",
-      order: 10,
-      groups: [
-        { id: "progress-core", commandIds: ["progress.addRow", "progress.clearRows", "progress.logData"] },
-        { id: "progress-view", commandIds: ["progress.toggleGantt"] },
-      ],
-    },
-    {
-      tab: "App",
-      area: "center",
-      order: 20,
-      groups: [
-        { id: "progress-app", commandIds: ["planning.timescale", "estimates.vat"] },
-      ],
-    },
-  ], []);
+  return (
+    <div className={`app-shell ${isLite ? "mode-lite" : "mode-full"}`}>
+      {/* === [BLOCK: Header/Banner] === */}
+      {!isLite && <ProjectInfoBanner title="Prosjekt X" subtitle="Uten lagring (klar for wiring)" />}
 
-  const liteSlots = React.useMemo<SlotInjection[]>(() => [
-    {
-      tab: "Project",
-      area: "center",
-      order: 10,
-      groups: [
-        { id: "progress-core-lite", commandIds: ["progress.addRow", "progress.clearRows", "progress.logData"] },
-        { id: "progress-view-lite", commandIds: ["progress.toggleGantt"] },
-      ],
-    },
-  ], []);
-
-  const onPatch = React.useCallback((patch: { rowId: string; colId: string; oldValue: any; nextValue: any }) => {
-    setRows((prev) => prev.map((r) => (r.id === patch.rowId ? { ...r, [patch.colId]: patch.nextValue } : r)));
-    setDirty(true);
-    pushToastRef.current?.("Endring lagret");
-  }, []);
-  
-  const toolbarStatus = React.useMemo<"saved" | "autosave" | "offline">(() => {
-    if (!toolbarCtx.online) return "offline";
-    return toolbarCtx.dirty ? "autosave" : "saved";
-  }, [toolbarCtx.online, toolbarCtx.dirty]);
-
-  const tableSection = (
-    <TableCore columns={DEMO_COLUMNS} rows={rows} onPatch={onPatch} />
-  );
-
-  const ganttSection = showGantt ? (
-    <div
-      style={{
-        borderTop: "1px solid #2A2E34",
-        background: "#101214",
-        display: "grid",
-        placeItems: "center",
-        color: "#888",
-        height: 280,
-      }}
-    >
-      (Gantt-visning – dynamisk, kommer)
-    </div>
-  ) : (
-    <div
-      style={{
-        borderTop: "1px solid #2A2E34",
-        background: "#101214",
-        display: "grid",
-        placeItems: "center",
-        color: "#555",
-        height: 120,
-      }}
-    >
-      Gantt er skjult
-    </div>
-  );
-
- const liteView = (
-    <div
-      className="progress-print-root"
-      style={{ display: "grid", gridTemplateRows: "auto auto 1fr auto", height: "100%" }}
-    >
-      <div style={{ padding: 16 }}>
-        <h1 style={{ margin: 0 }}>📋 Progress Lite</h1>
-        <div style={{ fontSize: 14, opacity: 0.9 }}>
-          <p>
-            <b>Merk:</b> Data lagres ikke i Lite – skriv ut/eksporter til PDF.
-          </p>
-        </div>
-        <div style={{ display: "flex", gap: 8 }}>
-          <a
-            href={(() => {
-              const u = new URL(window.location.href);
-              u.searchParams.set("mode", "full");
-              return `${u.pathname}?${u.searchParams.toString()}`;
-            })()}
-            className="mcl-btn no-print"
-            style={{ textDecoration: "none" }}
-          >
-            Gå til full modus
-          </a>
-          <button className="mcl-btn no-print" onClick={() => window.print()}>
-            Eksporter til PDF
+      {/* === [BLOCK: Toolbar] === */}
+      <div className="app-toolbar app-chrome">
+        {ToolbarCore
+          ? <ToolbarCore {...toolbarProps} />
+          : <Missing what="ToolbarCore" />}
+        {isLite && (
+          <button className="print-btn" onClick={handlePrint} aria-label="Skriv ut">
+            Skriv ut
           </button>
+        )}
+      </div>
+
+      {/* === [BLOCK: Main] === */}
+      <div className="app-main">
+        <div className="table-wrap">
+          {TableCore
+            ? <TableCore {...tableProps} />
+            : <Missing what="TableCore" />}
+        </div>
+
+        <div className="gantt-wrap">
+          <GanttPlaceholder
+            variant={isLite ? "static" : "coming-soon"}
+            note={isLite ? "Statisk placeholder (Lite)" : "Dynamisk Gantt kommer i Full"}
+          />
         </div>
       </div>
 
-      <ToolbarCore
-        ctx={{ ...toolbarCtx, online: false, dirty: false }}
-        slots={liteSlots}
-        projectName="Progress Lite"
-        status="offline"
-        maxWidth="960px"
-      />
-
-      <div style={{ borderTop: "1px solid #2A2E34" }}>{tableSection}</div>
-
-        <div
-        style={{
-          borderTop: "1px solid #2A2E34",
-          display: "grid",
-          placeItems: "center",
-          color: "#888",
-          height: 240,
-        }}
-      >
-        (Statisk Gantt for utskrift – kommer)
-      </div>
+      {/* === [BLOCK: Styles – enkle base-stiler her for tydelighet] === */}
+      <style>{`
+        .app-shell { display: flex; flex-direction: column; min-height: 100vh; }
+        .app-toolbar { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-bottom: 1px solid #2223; }
+        .print-btn { margin-left: auto; padding: 8px 12px; border-radius: 8px; border: 1px solid #444; background: #222; color: #fff; cursor: pointer; }
+        .print-btn:hover { opacity: .9; }
+        .app-main { display: grid; grid-template-columns: 1fr 360px; gap: 12px; padding: 12px; }
+        .table-wrap, .gantt-wrap { background: #111; border: 1px solid #222; border-radius: 12px; padding: 12px; }
+        .mode-lite .app-toolbar, .mode-lite .print-btn { background: #1f1a16; } /* "kaffetone" */
+        .mode-full .app-toolbar { background: #1f1a16; }
+      `}</style>
     </div>
-  );
-
-  const fullView = (
-    <div
-      className="progress-full-mode"
-      style={{ display: "grid", gridTemplateRows: "auto auto 1fr auto", height: "100%" }}
-    >
-      <ProjectInfoBanner />
-
-      <ToolbarCore
-        ctx={toolbarCtx}
-        slots={slots}
-        projectName="DemoProsjekt"
-        status={toolbarStatus}
-        maxWidth="1280px"
-      />
-
-      <div style={{ borderTop: "1px solid #2A2E34", padding: "12px" }}>
-        <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
-          <button className="mcl-btn" onClick={() => setOnline((v) => !v)}>
-            Toggle Online ({String(online)})
-          </button>
-          <button className="mcl-btn" onClick={() => setDirty((v) => !v)}>
-            Toggle Dirty ({String(dirty)})
-          </button>
-        </div>
-        {tableSection}
-      </div>
-
-      {ganttSection}
-    </div>
-  );
-      
-  return mode === "lite" ? liteView : fullView;
+  )
 }
+/* ==== [BLOCK: App] END ==== */
