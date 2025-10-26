@@ -6,15 +6,12 @@ export interface ShellConfig {
   mode: ShellMode;
   orgId?: string | null;
   projectId?: string | null;
-  locale?: string;
   title?: string;
 }
 
-export interface ShellContextValue extends Required<Pick<ShellConfig, "mode" | "locale">> {
+export interface ShellContextValue extends Required<Pick<ShellConfig, "mode">> {
   orgId: string | null;
   projectId: string | null;
-  setLocale: (next: string) => void;
-  t: (key: string) => string;
   openHelp: () => void;
   pushToast: (msg: string) => void;
 
@@ -65,8 +62,6 @@ export const tokens: {
   shadow: { card: string };
 };
 
-export function initI18n(locale?: string): void;
-
 export function getShellInfo(): { name: string; version: string };
 
 declare const _default: {
@@ -75,6 +70,5 @@ declare const _default: {
   ShellProvider: typeof ShellProvider;
   useShell: typeof useShell;
   tokens: typeof tokens;
-  initI18n: typeof initI18n;
 };
 export default _default;
