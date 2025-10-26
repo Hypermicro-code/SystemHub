@@ -3,8 +3,8 @@
   "version": "0.0.1",
   "private": true,
   "description": "MorningCoffee – ToolbarCore (placeholder mount)",
-  "main": "src/index.js",
-  "module": "src/index.js",
+  "main": "src/index.ts",
+  "module": "src/index.ts",
   "types": "src/index.d.ts",
   "sideEffects": false,
   "peerDependencies": {
