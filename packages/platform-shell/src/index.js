@@ -25,34 +25,9 @@ export const tokens = {
 };
 // ==== [BLOCK: Tokens/Theme] END ====
 
-// ==== [BLOCK: i18n] BEGIN ====
-const NB = {
-  "app.title": "MorningCoffee – System",
-  "header.help": "Hjelp",
-  "header.ping": "Ping Progress",
-  "panel.helpTitle": "Hjelp",
-  "panel.close": "Lukk"
-};
-const EN = {
-  "app.title": "MorningCoffee – System",
-  "header.help": "Help",
-  "header.ping": "Ping Progress",
-  "panel.helpTitle": "Help",
-  "panel.close": "Close"
-};
-let DICT = { nb: NB, en: EN };
-let CURRENT_LOCALE = "nb";
-export function initI18n(locale = "nb") { CURRENT_LOCALE = DICT[locale] ? locale : "nb"; }
-function translate(key) {
-  const table = DICT[CURRENT_LOCALE] || NB;
-  return table[key] || key;
-}
-// ==== [BLOCK: i18n] END ====
-
 // ==== [BLOCK: Context] BEGIN ====
 const ShellCtx = createContext({});
 export function ShellProvider({ config, children }) {
-  const [locale, setLocale] = useState(config?.locale || "nb");
   const [helpOpen, setHelpOpen] = useState(false);
   const [toasts, setToasts] = useState([]);
 
@@ -64,8 +39,6 @@ export function ShellProvider({ config, children }) {
       appHandlerRef.current({ name, payload });
     }
   }, []);
-
-  React.useEffect(() => { initI18n(locale); }, [locale]);
 
   const pushToast = useCallback((msg) => {
     const id = Date.now() + Math.random();
@@ -80,14 +53,11 @@ export function ShellProvider({ config, children }) {
     mode: config?.mode || "standalone",
     orgId: config?.orgId ?? null,
     projectId: config?.projectId ?? null,
-    locale,
-    setLocale,
-    t: translate,
     openHelp,
     pushToast,
     setAppCommandHandler,
     emitAppCommand
-  }), [config?.mode, config?.orgId, config?.projectId, locale, openHelp, pushToast, setAppCommandHandler, emitAppCommand]);
+  }), [config?.mode, config?.orgId, config?.projectId, openHelp, pushToast, setAppCommandHandler, emitAppCommand]);
 
   return React.createElement(
     ShellCtx.Provider,
@@ -106,7 +76,7 @@ export function useShell() {
 
 // ==== [BLOCK: Layout/Header] BEGIN ====
 function Header({ title }) {
-  const { t, openHelp, emitAppCommand } = useShell();
+  const { openHelp, emitAppCommand } = useShell();
   const styles = {
     root: {
       display: "flex",
@@ -145,12 +115,12 @@ function Header({ title }) {
   return React.createElement(
     "div",
     { style: styles.root },
-    React.createElement("div", { style: styles.left }, title || translate("app.title")),
+    React.createElement("div", { style: styles.left }, title || "MorningCoffee – System"),
     React.createElement(
       "div",
       { style: styles.right },
-      React.createElement("button", { style: styles.btn, onClick: () => emitAppCommand("progress:ping", { at: Date.now() }) }, t("header.ping")),
-      React.createElement("button", { style: styles.btnAccent, onClick: openHelp }, t("header.help"))
+      React.createElement("button", { style: styles.btn, onClick: () => emitAppCommand("progress:ping", { at: Date.now() }) }, "Ping Progress"),
+      React.createElement("button", { style: styles.btnAccent, onClick: openHelp }, "Hjelp")
     )
   );
 }
@@ -170,7 +140,6 @@ export function ProjectLayout({ title, content }) {
 
 // ==== [BLOCK: HelpPanel Stub] BEGIN ====
 function HelpPanel({ onClose }) {
-  const { t } = useShell();
   const styles = {
     overlay: { position: "fixed", inset: 0, background: "rgba(0,0,0,0.55)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 50 },
     panel: { width: "min(640px, 92vw)", background: tokens.color.panel, border: `1px solid ${tokens.color.border}`, borderRadius: tokens.radius.card, padding: tokens.space.md, boxShadow: tokens.shadow.card },
@@ -183,9 +152,9 @@ function HelpPanel({ onClose }) {
     "div", { style: styles.overlay, role: "dialog", "aria-modal": "true" },
     React.createElement(
       "div", { style: styles.panel },
-      React.createElement("h2", { style: styles.h }, t("panel.helpTitle")),
+      React.createElement("h2", { style: styles.h }, "Hjelp"),
       React.createElement("p", { style: styles.p }, "Dette er et hjelpepanelet (stub). Innhold og lenker kommer i Etappe C."),
-      React.createElement("div", { style: styles.row }, React.createElement("button", { style: styles.btn, onClick: onClose }, t("panel.close")))
+     React.createElement("div", { style: styles.row }, React.createElement("button", { style: styles.btn, onClick: onClose }, "Lukk"))
     )
   );
 }
@@ -261,5 +230,5 @@ export function ProjectList({ items, onSelect }) {
 
 // ==== [BLOCK: Public helpers] BEGIN ====
 export function getShellInfo() { return { name: SHELL_NAME, version: SHELL_VERSION }; }
-export default { ProjectLayout, ProjectList, ShellProvider, useShell, tokens, initI18n };
+export default { ProjectLayout, ProjectList, ShellProvider, useShell, tokens };
 // ==== [BLOCK: Public helpers] END ====
