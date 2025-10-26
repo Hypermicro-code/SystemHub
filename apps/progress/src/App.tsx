@@ -69,7 +69,7 @@ export default function App() {
   const { mode } = useProgressCtx();
   const { pushToast } = useShell();
 
-    const [rows, setRows] = React.useState<RowLike[]>(DEMO_ROWS_INITIAL);
+  const [rows, setRows] = React.useState<RowLike[]>(DEMO_ROWS_INITIAL);
   const [online, setOnline] = React.useState(true);
   const [dirty, setDirty] = React.useState(false);
   const [showGantt, setShowGantt] = React.useState(true);
@@ -113,7 +113,7 @@ export default function App() {
     pushToastRef.current?.("La til ny aktivitet");
   };
 
-    clearRowsRef.current = () => {
+  clearRowsRef.current = () => {
     setRows([]);
     setDirty(true);
     pushToastRef.current?.("Tabell tømt");
@@ -202,15 +202,36 @@ export default function App() {
     },
   ], []);
 
+  const liteSlots = React.useMemo<SlotInjection[]>(() => [
+    {
+      tab: "Project",
+      area: "center",
+      order: 10,
+      groups: [
+        { id: "progress-core-lite", commandIds: ["progress.addRow", "progress.clearRows", "progress.logData"] },
+        { id: "progress-view-lite", commandIds: ["progress.toggleGantt"] },
+      ],
+    },
+  ], []);
+
   const onPatch = React.useCallback((patch: { rowId: string; colId: string; oldValue: any; nextValue: any }) => {
     setRows((prev) => prev.map((r) => (r.id === patch.rowId ? { ...r, [patch.colId]: patch.nextValue } : r)));
     setDirty(true);
     pushToastRef.current?.("Endring lagret");
   }, []);
   
+  const toolbarStatus = React.useMemo<"saved" | "autosave" | "offline">(() => {
+    if (!toolbarCtx.online) return "offline";
+    return toolbarCtx.dirty ? "autosave" : "saved";
+  }, [toolbarCtx.online, toolbarCtx.dirty]);
+
+  const tableSection = (
+    <TableCore columns={DEMO_COLUMNS} rows={rows} onPatch={onPatch} />
+  );
+
   if (mode === "lite") {
     return (
-      <div className="progress-print-root" style={{ display: "grid", gridTemplateRows: "auto 1fr auto", height: "100%" }}>
+      <div className="progress-print-root" style={{ display: "grid", gridTemplateRows: "auto auto 1fr auto", height: "100%" }}>
         <div style={{ padding: 16 }}>
           <h1 style={{ margin: 0 }}>📋 Progress Lite</h1>
           <div style={{ fontSize: 14, opacity: 0.9 }}>
@@ -221,7 +242,7 @@ export default function App() {
               href={(() => {
                 const u = new URL(window.location.href);
                 u.searchParams.set("mode", "full");
-                return u.pathname + "?" + u.searchParams.toString();
+                return `${u.pathname}?${u.searchParams.toString()}`;
               })()}
               className="mcl-btn no-print"
               style={{ textDecoration: "none" }}
@@ -232,8 +253,16 @@ export default function App() {
           </div>
         </div>
 
+        <ToolbarCore
+          ctx={{ ...toolbarCtx, online: false, dirty: false }}
+          slots={liteSlots}
+          projectName="Progress Lite"
+          status="offline"
+          maxWidth="960px"
+        />
+
         <div style={{ borderTop: "1px solid #2A2E34" }}>
-          <TableCore columns={DEMO_COLUMNS} rows={rows} onPatch={onPatch} />
+          {tableSection}
         </div>
 
         <div style={{ borderTop: "1px solid #2A2E34", display: "grid", placeItems: "center", color: "#888", height: 240 }}>
@@ -247,11 +276,11 @@ export default function App() {
     <div className="progress-full-mode" style={{ display: "grid", gridTemplateRows: "auto auto 1fr auto", height: "100%" }}>
       <ProjectInfoBanner />
 
-       <ToolbarCore
+      <ToolbarCore
         ctx={toolbarCtx}
         slots={slots}
         projectName="DemoProsjekt"
-        status={toolbarCtx.online ? (toolbarCtx.dirty ? "autosave" : "saved") : "offline"}
+        status={toolbarStatus}
         maxWidth="1280px"
       />
 
@@ -264,8 +293,7 @@ export default function App() {
             Toggle Dirty ({String(dirty)})
           </button>
         </div>
-        <TableCore columns={DEMO_COLUMNS} rows={rows} onPatch={onPatch} />
-      </div>
+         {tableSection}
 
       {showGantt ? (
         <div style={{ borderTop: "1px solid #2A2E34", background: "#101214", display: "grid", placeItems: "center", color: "#888", height: 280 }}>
