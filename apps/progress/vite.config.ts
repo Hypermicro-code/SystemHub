@@ -1,22 +1,27 @@
-/* ============================================
-   vite.config.ts – Progress app
-   - Viktig: base for GitHub Pages under /SystemHub
-   - Alias @ → /packages/toolbar-core/src
-   ============================================ */
-import { defineConfig } from "vite"
-import react from "@vitejs/plugin-react"
-import path from "path"
-import { fileURLToPath } from "url"
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+// Bruk env-variabel fra workflow (fallback for lokal dev)
+const base = process.env.VITE_BASE || "/SystemHub/";
+
+// Absolutte stier (ESM-trygt)
+const here = fileURLToPath(new URL(".", import.meta.url)); // .../apps/progress/
+const toolbarSrc = path.resolve(here, "../../packages/toolbar-core/src");
 
 export default defineConfig({
-  base: "/SystemHub/", // <<— KRITISK for gh-pages på https://.../SystemHub/
   plugins: [react()],
+  base,
+  server: { port: 5173 },
+  build: { outDir: "dist" },
+
   resolve: {
+    preserveSymlinks: true,
     alias: {
-      "@": path.resolve(__dirname, "../../packages/toolbar-core/src"),
+      // ← Lar ToolbarCore sin interne import "@/..." fungere
+      "@": toolbarSrc,
+
     },
   },
-})
+});
