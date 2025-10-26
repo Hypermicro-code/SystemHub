@@ -3,7 +3,7 @@ import { useShell, ProjectList } from "@hypermicro-code/platform-shell";
 import ProgressGridView from "./ProgressGridView";
 
 export default function ProgressHome() {
-  const { orgId, projectId, locale, setAppCommandHandler, pushToast } = useShell();
+  const { orgId, projectId, setAppCommandHandler, pushToast } = useShell();
 
   React.useEffect(() => {
     setAppCommandHandler((cmd) => {
@@ -37,7 +37,6 @@ export default function ProgressHome() {
       <ul style={{ marginBottom: 16 }}>
         <li><strong>orgId:</strong> {String(orgId)}</li>
         <li><strong>projectId:</strong> {String(projectId)}</li>
-        <li><strong>locale:</strong> {String(locale)}</li>
       </ul>
 
       <h3 style={{ marginTop: 0 }}>Dine prosjekter (dummy)</h3>
