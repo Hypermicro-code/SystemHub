@@ -17,13 +17,4 @@ export function setQueryParams(patch: Record<string, string | null | undefined>)
   window.dispatchEvent(new Event("popstate"));
 }
 
-/** Hent nettleserens locale i form som passer URL (f.eks. nb-NO eller en-US). */
-export function getBrowserLocale(): string {
-  const lng = (navigator?.language || navigator?.languages?.[0] || "nb-NO");
-  // Normaliser enkel språk-kode til stor landsdel: en -> en-US, nb -> nb-NO
-  if (lng.includes("-")) return lng;
-  if (lng.toLowerCase() === "en") return "en-US";
-  if (lng.toLowerCase() === "nb" || lng.toLowerCase() === "no") return "nb-NO";
-  return lng;
-}
 // ==== [BLOCK: Hub Nav Utils] END ====
