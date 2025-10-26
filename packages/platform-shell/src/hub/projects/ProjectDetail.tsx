@@ -1,7 +1,7 @@
 // ==== [BLOCK: ProjectDetail] BEGIN ====
 import React from "react";
 import { getProject, updateProjectName, archiveProject } from "../data";
-import { setQueryParams, getBrowserLocale } from "../nav";
+import { setQueryParams } from "../nav";
 
 export function ProjectDetail({ projectId }: { projectId: string }) {
   const [name, setName] = React.useState<string>("");
@@ -27,7 +27,6 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
   };
 
   const orgId = "demo-org";
-  const locale = getBrowserLocale();
 
   return (
     <section className="hub-section">
@@ -37,7 +36,7 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
           <button className="mcl-btn" onClick={backToList}>Til liste</button>
           <a
             className="mcl-btn"
-            href={`./?projectId=${encodeURIComponent(projectId)}&orgId=${encodeURIComponent(orgId)}&locale=${encodeURIComponent(locale)}`}
+           href={`./?projectId=${encodeURIComponent(projectId)}&orgId=${encodeURIComponent(orgId)}`}
           >
             Åpne i Progress
           </a>
