@@ -7,8 +7,8 @@
 export type Command = {
   /** Stabil, unik ID, f.eks. "toolbar.file.save" */
   id: string
-  /** i18n-nøkkel eller visningsnavn */
-  labelKey: string
+  /** Visningsnavn */
+  label: string
   /** Ikon-komponent (React-element) */
   icon?: React.ReactNode
   /** Gruppe (brukes i toolbarens layout) */
@@ -23,6 +23,8 @@ export type Command = {
   isEnabled?: (ctx: any) => boolean
   /** Skal knappen ha vedvarende "på"-tilstand? (toggle) */
   toggleable?: boolean
+   /** Kalkulerer om knappen vises som aktiv */
+  pressed?: (ctx: any) => boolean
 }
 
 /* ---------------------------------------------------------------------------
