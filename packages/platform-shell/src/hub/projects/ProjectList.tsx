@@ -1,6 +1,6 @@
 import React from "react";
 import { loadProjects, createProject } from "../data";
-import { setQueryParams, getBrowserLocale } from "../nav";
+import { setQueryParams } from "../nav";
 import { NewProjectModal } from "./NewProjectModal";
 import { buildProjectsCsv, downloadCsv } from "../export";
 
@@ -11,7 +11,6 @@ export function ProjectList() {
   const exportCsv = () => downloadCsv("manage-hub-projects.csv", buildProjectsCsv());
 
   const orgId = "demo-org";
-  const locale = getBrowserLocale();
 
   return (
     <section className="hub-section">
@@ -55,7 +54,7 @@ export function ProjectList() {
                   <a
                     className="mcl-btn"
                     style={{ marginLeft: 6, textDecoration: "none" }}
-                    href={`./?projectId=${encodeURIComponent(p.id)}&orgId=${encodeURIComponent(orgId)}&locale=${encodeURIComponent(locale)}&mode=full`}
+                   href={`./?projectId=${encodeURIComponent(p.id)}&orgId=${encodeURIComponent(orgId)}&mode=full`}
                     title="Åpne i Progress (full)"
                   >
                     Progress
@@ -65,7 +64,7 @@ export function ProjectList() {
                   <a
                     className="mcl-btn"
                     style={{ marginLeft: 6, textDecoration: "none", opacity: 0.8 }}
-                    href={`./?projectId=${encodeURIComponent(p.id)}&orgId=${encodeURIComponent(orgId)}&locale=${encodeURIComponent(locale)}&mode=lite`}
+                   href={`./?projectId=${encodeURIComponent(p.id)}&orgId=${encodeURIComponent(orgId)}&mode=lite`}
                     title="Åpne i Progress (Lite-modus)"
                   >
                     Lite
