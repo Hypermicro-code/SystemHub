@@ -16,18 +16,18 @@ export type CommandRun = (ctx: ToolbarContext, payload?: unknown) => void | Prom
 
 export type Command = {
   id: string                         // f.eks. "toolbar.file.save"
-  labelKey: string                   // i18n nøkkel
-  icon?: ReactNode                   // lucide icon element
+  label: string                      // direkte etikett
+  icon?: ReactNode                   // ikon-element (emoji eller React-node)
   shortcut?: string                  // "Ctrl+S"
   group: string                      // "file", "edit", "view", "hierarchy", ...
   isEnabled?: (ctx: ToolbarContext) => boolean
   isVisible?: (ctx: ToolbarContext) => boolean
   run: CommandRun
+  pressed?: (ctx: ToolbarContext) => boolean
 }
 
 export type ToolbarGroupDef = {
   id: string
-  titleKey?: string
   commandIds: string[]
 }
 
@@ -36,5 +36,6 @@ export type SlotArea = "left" | "center" | "right"
 export type SlotInjection = {
   area: SlotArea
   order: number
+  tab?: string
   groups: ToolbarGroupDef[]
 }
