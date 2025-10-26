@@ -3,9 +3,8 @@ import React from "react";
 export type ProgressCtx = {
   projectId?: string;
   orgId?: string;
-  locale?: string;
   mode?: "lite" | "full";
-  setContext: (patch: Partial<Pick<ProgressCtx, "projectId" | "orgId" | "locale" | "mode">>) => void;
+  setContext: (patch: Partial<Pick<ProgressCtx, "projectId" | "orgId" | "mode">>) => void;
 };
 
 function qp(k: string): string | undefined {
@@ -16,7 +15,6 @@ function readFromUrl(): Partial<ProgressCtx> {
   return {
     projectId: qp("projectId"),
     orgId: qp("orgId"),
-    locale: qp("locale"),
     mode: qp("mode") as "lite" | "full" | undefined,
   };
 }
@@ -34,7 +32,6 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = React.useState<Omit<ProgressCtx, "setContext">>({
     projectId: initial.projectId,
     orgId: initial.orgId,
-    locale: initial.locale,
     mode: initial.mode ?? "full",
   });
 
@@ -43,7 +40,6 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
     safeWriteLS({
       projectId: state.projectId,
       orgId: state.orgId,
-      locale: state.locale,
       mode: state.mode,
     });
     // 🔊 Broadcast til Shell/indikator
@@ -61,7 +57,6 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
         ...s,
         projectId: p.projectId ?? s.projectId,
         orgId: p.orgId ?? s.orgId,
-        locale: p.locale ?? s.locale,
         mode: p.mode ?? s.mode,
       }));
     }
@@ -72,7 +67,7 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
   React.useEffect(() => {
     const onPop = () => {
       const u = readFromUrl();
-      if (u.projectId || u.orgId || u.locale || u.mode) setState(s => ({ ...s, ...u }));
+      if (u.projectId || u.orgId || u.mode) setState(s => ({ ...s, ...u }));
     };
     window.addEventListener("popstate", onPop);
     return () => window.removeEventListener("popstate", onPop);
@@ -104,7 +99,6 @@ function safeReadLS(): Partial<ProgressCtx> {
       return {
         projectId: o.projectId,
         orgId: o.orgId,
-        locale: o.locale,
         mode: o.mode,
       };
     }
