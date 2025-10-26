@@ -1,5 +1,7 @@
 /* ============================================
-   vite.config.ts – kun nødvendig alias for ToolbarCore
+   vite.config.ts – Progress app
+   - Viktig: base for GitHub Pages under /SystemHub
+   - Alias @ → /packages/toolbar-core/src
    ============================================ */
 import { defineConfig } from "vite"
 import react from "@vitejs/plugin-react"
@@ -10,10 +12,10 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 export default defineConfig({
+  base: "/SystemHub/", // <<— KRITISK for gh-pages på https://.../SystemHub/
   plugins: [react()],
   resolve: {
     alias: {
-      // @ → /packages/toolbar-core/src
       "@": path.resolve(__dirname, "../../packages/toolbar-core/src"),
     },
   },
