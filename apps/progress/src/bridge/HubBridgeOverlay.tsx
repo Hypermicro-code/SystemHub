@@ -8,7 +8,6 @@ function readParam(k: string): string | null {
 type Ctx = {
   projectId?: string;
   orgId?: string;
-  locale?: string;
 };
 
 export function HubBridgeOverlay() {
@@ -17,10 +16,9 @@ export function HubBridgeOverlay() {
   const ctx: Ctx = {
     projectId: readParam("projectId") ?? undefined,
     orgId: readParam("orgId") ?? undefined,
-    locale: readParam("locale") ?? undefined,
   };
 
-  const hasCtx = !!(ctx.projectId || ctx.orgId || ctx.locale);
+  const hasCtx = !!(ctx.projectId || ctx.orgId);
   React.useEffect(() => {
     if (!hasCtx) return;
 
@@ -33,7 +31,7 @@ export function HubBridgeOverlay() {
     try {
       window.postMessage({ type: "mcl:progress:setContext", payload: ctx }, "*");
     } catch {}
-  }, [hasCtx, ctx.projectId, ctx.orgId, ctx.locale]);
+  }, [hasCtx, ctx.projectId, ctx.orgId]);
 
   if (!hasCtx || !visible) return null;
 
@@ -69,7 +67,6 @@ export function HubBridgeOverlay() {
       <div style={{ marginTop: 6, display: "grid", gap: 2 }}>
         {ctx.projectId && <div><span style={{ opacity: 0.75 }}>projectId:</span> {ctx.projectId}</div>}
         {ctx.orgId && <div><span style={{ opacity: 0.75 }}>orgId:</span> {ctx.orgId}</div>}
-        {ctx.locale && <div><span style={{ opacity: 0.75 }}>locale:</span> {ctx.locale}</div>}
       </div>
     </div>
   );
