@@ -1,31 +1,24 @@
-/* ==== [BLOCK: Print CSS — Progress Lite] BEGIN ==== */
+/* ============================================
+   print.css – Lite-modus: skjul krom ved utskrift
+   ============================================ */
 
-/* Skru av alt "chrome" når vi printer */
 @media print {
-  /* Shell-header + sidebar */
-  header, aside { display: none !important; }
+  /* Skjul verktøylinje, banner o.l. */
+  .app-chrome { display: none !important; }
 
-  /* Gi innholdet full bredde/hvit bakgrunn for utskrift */
-  body { background: #fff !important; color: #000 !important; }
-  .progress-print-root {
+  /* Fyll hele bredden med tabell + gantt */
+  .app-main {
+    display: block !important;
+    padding: 0 !important;
+  }
+  .table-wrap, .gantt-wrap {
+    border: none !important;
+    padding: 0 !important;
     background: #fff !important;
     color: #000 !important;
-    padding: 0 !important;
-    margin: 0 !important;
   }
-
-  /* Fjern mørke panelbakgrunner/border i Lite-info */
-  .progress-lite-info,
-  .progress-lite-placeholder {
-    background: #fff !important;
-    border: 1px solid #000 !important;
-    opacity: 1 !important;
+  body {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
-
-  /* Skjul knapper som ikke skal på utskrift */
-  .no-print { display: none !important; }
-
-  /* Tving sidekanter litt pent */
-  @page { margin: 12mm; }
 }
-/* ==== [BLOCK: Print CSS — Progress Lite] END ==== */
