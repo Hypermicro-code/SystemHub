@@ -229,6 +229,34 @@ export default function App() {
     <TableCore columns={DEMO_COLUMNS} rows={rows} onPatch={onPatch} />
   );
 
+  const ganttSection = showGantt ? (
+    <div
+      style={{
+        borderTop: "1px solid #2A2E34",
+        background: "#101214",
+        display: "grid",
+        placeItems: "center",
+        color: "#888",
+        height: 280,
+      }}
+    >
+      (Gantt-visning – dynamisk, kommer)
+    </div>
+  ) : (
+    <div
+      style={{
+        borderTop: "1px solid #2A2E34",
+        background: "#101214",
+        display: "grid",
+        placeItems: "center",
+        color: "#555",
+        height: 120,
+      }}
+    >
+      Gantt er skjult
+    </div>
+  );
+
   if (mode === "lite") {
     return (
       <div className="progress-print-root" style={{ display: "grid", gridTemplateRows: "auto auto 1fr auto", height: "100%" }}>
@@ -295,15 +323,7 @@ export default function App() {
         </div>
          {tableSection}
 
-      {showGantt ? (
-        <div style={{ borderTop: "1px solid #2A2E34", background: "#101214", display: "grid", placeItems: "center", color: "#888", height: 280 }}>
-          (Gantt-visning – dynamisk, kommer)
-        </div>
-      ) : (
-        <div style={{ borderTop: "1px solid #2A2E34", background: "#101214", display: "grid", placeItems: "center", color: "#555", height: 120 }}>
-          Gantt er skjult
-        </div>
-      )}
+      {ganttSection}
     </div>
   );
 }
