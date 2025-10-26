@@ -1,5 +1,4 @@
 import React from "react"
-import { useTranslation } from "react-i18next"
 import { getCommandsByIds } from "@/core/CommandRegistry"
 import type { ToolbarContext, ToolbarGroupDef } from "@/core/types"
 
@@ -13,7 +12,6 @@ type Props = {
  * Henter kommandoer via CommandRegistry og kaller cmd.run(ctx) ved klikk.
  */
 export default function ToolbarGroup({ group, ctx }: Props) {
-  const { t } = useTranslation()
   const cmds = getCommandsByIds(group.commandIds || [])
 
   return (
@@ -25,13 +23,13 @@ export default function ToolbarGroup({ group, ctx }: Props) {
         if (!visible) return null
 
         const enabled = cmd.isEnabled ? !!cmd.isEnabled(ctx) : true
-        const label = cmd.labelKey ? t(cmd.labelKey as any) : ""
+        const label = cmd.label || cmd.id
         const title =
           cmd.shortcut && label ? `${label} (${cmd.shortcut})` : label || undefined
 
         const ariaPressed =
-          typeof (cmd as any).pressed === "function"
-            ? ((cmd as any).pressed(ctx) ? "true" : "false")
+          typeof cmd.pressed === "function"
+            ? (cmd.pressed(ctx) ? "true" : "false")
             : undefined
 
         return (
