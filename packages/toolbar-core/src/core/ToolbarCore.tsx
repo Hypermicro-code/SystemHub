@@ -27,34 +27,34 @@ const ICONS = {
 /* ===== [BLOCK: Default Commands] ===== */
 registerCommands([
   // File
-  { id: "toolbar.file.save",   labelKey:"file.save",   icon:<Save/>,     group:"file",  shortcut:"Ctrl+S",        run:(ctx)=>alert("Lagre (demo)") },
-  { id: "toolbar.file.import", labelKey:"file.import", icon:<Upload/>,   group:"file",                          run:()=>alert("Importer (demo)") },
-  { id: "toolbar.file.export", labelKey:"file.export", icon:<Download/>, group:"file",                          run:()=>alert("Eksporter (demo)") },
+{ id: "toolbar.file.save",   label:"Lagre",        icon: ICONS.save,   group:"file",  shortcut:"Ctrl+S",        run:(ctx)=>alert("Lagre (demo)") },
+  { id: "toolbar.file.import", label:"Importer",     icon: ICONS.import, group:"file",                          run:()=>alert("Importer (demo)") },
+  { id: "toolbar.file.export", label:"Eksporter",    icon: ICONS.export, group:"file",                          run:()=>alert("Eksporter (demo)") },
 
   // Edit
-  { id:"toolbar.edit.cut",     labelKey:"edit.cut",    icon:<Scissors/>,       group:"edit",                          run:()=>alert("Klipp (demo)") },
-  { id:"toolbar.edit.copy",    labelKey:"edit.copy",   icon:<Copy/>,           group:"edit",                          run:()=>alert("Kopier (demo)") },
-  { id:"toolbar.edit.paste",   labelKey:"edit.paste",  icon:<ClipboardPaste/>, group:"edit",                          run:()=>alert("Lim inn (demo)") },
-  { id:"toolbar.edit.undo",    labelKey:"edit.undo",   icon:<Undo2/>,          group:"edit",  shortcut:"Ctrl+Z",      run:()=>alert("Angre (demo)") },
-  { id:"toolbar.edit.redo",    labelKey:"edit.redo",   icon:<Redo2/>,          group:"edit",  shortcut:"Shift+Ctrl+Z", run:()=>alert("Gjør om (demo)") },
-  { id:"toolbar.edit.delete",  labelKey:"edit.delete", icon:<Trash2/>,         group:"edit",                          run:()=>alert("Slett (demo)") },
+  { id:"toolbar.edit.cut",     label:"Klipp",        icon: ICONS.cut,       group:"edit",                          run:()=>alert("Klipp (demo)") },
+  { id:"toolbar.edit.copy",    label:"Kopier",       icon: ICONS.copy,      group:"edit",                          run:()=>alert("Kopier (demo)") },
+  { id:"toolbar.edit.paste",   label:"Lim inn",      icon: ICONS.paste,     group:"edit",                          run:()=>alert("Lim inn (demo)") },
+  { id:"toolbar.edit.undo",    label:"Angre",        icon: ICONS.undo,      group:"edit",  shortcut:"Ctrl+Z",      run:()=>alert("Angre (demo)") },
+  { id:"toolbar.edit.redo",    label:"Gjør om",      icon: ICONS.redo,      group:"edit",  shortcut:"Shift+Ctrl+Z", run:()=>alert("Gjør om (demo)") },
+  { id:"toolbar.edit.delete",  label:"Slett",        icon: ICONS.delete,    group:"edit",                          run:()=>alert("Slett (demo)") },
 
   // View
-  { id:"toolbar.view.zoomout",  labelKey:"view.zoomout",  icon:<ZoomOut/>,  group:"view", run:()=>alert("Zoom − (demo)") },
-  { id:"toolbar.view.zoomreset", labelKey:"view.zoomreset", icon:<Square/>, group:"view", run:()=>alert("100% (demo)") },
-  { id:"toolbar.view.zoomin",   labelKey:"view.zoomin",   icon:<ZoomIn/>,   group:"view", run:()=>alert("Zoom + (demo)") },
-  { id:"toolbar.view.filter",   labelKey:"view.filter",   icon:<ListFilter/>, group:"view", run:()=>alert("Filter (demo)") },
+  { id:"toolbar.view.zoomout",  label:"Zoom −",       icon: ICONS.zoomOut,   group:"view", run:()=>alert("Zoom − (demo)") },
+  { id:"toolbar.view.zoomreset", label:"100%",        icon: ICONS.zoomReset, group:"view", run:()=>alert("100% (demo)") },
+  { id:"toolbar.view.zoomin",   label:"Zoom +",       icon: ICONS.zoomIn,    group:"view", run:()=>alert("Zoom + (demo)") },
+  { id:"toolbar.view.filter",   label:"Filter",       icon: ICONS.filter,    group:"view", run:()=>alert("Filter (demo)") },
 
   // Insert
-  { id:"toolbar.insert.newrow",     labelKey:"insert.row",        icon:<Plus/>,   group:"insert", run:()=>alert("Ny rad (demo)") },
-  { id:"toolbar.insert.attachment", labelKey:"insert.attachment", icon:<FileUp/>, group:"insert", run:()=>alert("Vedlegg (demo)") },
+  { id:"toolbar.insert.newrow",     label:"Ny rad",       icon: ICONS.newRow,      group:"insert", run:()=>alert("Ny rad (demo)") },
+  { id:"toolbar.insert.attachment", label:"Vedlegg",      icon: ICONS.attachment, group:"insert", run:()=>alert("Vedlegg (demo)") },
 
   // Tools (hierarki/rader)
-  { id:"toolbar.hierarchy.indent",  labelKey:"hierarchy.indent",  icon:<ChevronRight/>, group:"tools", run:()=>alert("Innrykk (demo)") },
-  { id:"toolbar.hierarchy.outdent", labelKey:"hierarchy.outdent", icon:<ChevronLeft/>,  group:"tools", run:()=>alert("Utrykk (demo)") },
+  { id:"toolbar.hierarchy.indent",  label:"Innrykk",     icon: ICONS.indent, group:"tools", run:()=>alert("Innrykk (demo)") },
+  { id:"toolbar.hierarchy.outdent", label:"Utrykk",      icon: ICONS.outdent, group:"tools", run:()=>alert("Utrykk (demo)") },
 
   // Help
-  { id:"toolbar.help.shortcuts", labelKey:"help.shortcuts", icon:<HelpCircle/>, group:"help", run:()=>alert("Snarveier (demo)") }
+  { id:"toolbar.help.shortcuts", label:"Snarveier",    icon: ICONS.help, group:"help", run:()=>alert("Snarveier (demo)") }
 ])
 
 /* ===== [BLOCK: Groups per tab] ===== */
