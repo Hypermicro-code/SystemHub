@@ -92,8 +92,19 @@ export default function ToolbarCore({
   headerRight,
   maxWidth
 }: Props){
-  const { t } = useTranslation()
-  const tabs = React.useMemo(()=>["File","Project","App","System"],[])
+  const baseTabs = React.useMemo(() => Object.keys(GROUPS_MAP), [])
+  const slotTabs = React.useMemo(() => {
+    const names = new Set<string>()
+    for (const slot of slots) {
+      if (slot.tab) names.add(slot.tab)
+    }
+    return Array.from(names)
+  }, [slots])
+  const tabs = React.useMemo(() => {
+    const set = new Set<string>(baseTabs)
+    for (const name of slotTabs) set.add(name)
+    return Array.from(set)
+  }, [baseTabs, slotTabs])
   const [visibleTab, setVisibleTab] = React.useState<string | null>(null)
   const [isClosing, setIsClosing] = React.useState(false)
 
@@ -117,7 +128,14 @@ export default function ToolbarCore({
     return () => el.classList.remove("ribbon-open")
   }, [visibleTab])
 
-  const slotGroups = slots.flatMap(s => s.groups)
+  const slotGroups = React.useMemo(() => {
+    if (!visibleTab) return []
+    return slots
+      .filter(slot => !slot.tab || slot.tab === visibleTab)
+      .sort((a, b) => a.order - b.order)
+      .flatMap(slot => slot.groups)
+  }, [slots, visibleTab])
+  
   const groups = React.useMemo(() => {
     if (!visibleTab) return []
     const base = GROUPS_MAP[visibleTab] ?? []
@@ -159,8 +177,8 @@ export default function ToolbarCore({
               <span className={`status-dot ${status==="saved" ? "status-ok" : status==="offline" ? "status-off" : ""}`} />
             </span>
             <span className="status-chip" title="Søk">
-              <span className="tb-icon"><Search/></span>
-              <span>{t("search.placeholder")}</span>
+              <span className="tb-icon">{ICONS.search}</span>
+              <span>Søk i prosjektet</span>
             </span>
             {headerRight /* app kan injisere logo/innhold */}
           </div>
