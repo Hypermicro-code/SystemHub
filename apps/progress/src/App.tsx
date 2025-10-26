@@ -258,48 +258,64 @@ export default function App() {
   );
 
  const liteView = (
-    <div className="progress-print-root" style={{ display: "grid", gridTemplateRows: "auto auto 1fr auto", height: "100%" }}>
+    <div
+      className="progress-print-root"
+      style={{ display: "grid", gridTemplateRows: "auto auto 1fr auto", height: "100%" }}
+    >
       <div style={{ padding: 16 }}>
         <h1 style={{ margin: 0 }}>📋 Progress Lite</h1>
         <div style={{ fontSize: 14, opacity: 0.9 }}>
-          <p><b>Merk:</b> Data lagres ikke i Lite – skriv ut/eksporter til PDF.</p>
-          </div>
-          <div style={{ display: "flex", gap: 8 }}>
-            <a
-              href={(() => {
-                const u = new URL(window.location.href);
-                u.searchParams.set("mode", "full");
-                return `${u.pathname}?${u.searchParams.toString()}`;
-              })()}
-              className="mcl-btn no-print"
-              style={{ textDecoration: "none" }}
-            >
-              Gå til full modus
-            </a>
-            <button className="mcl-btn no-print" onClick={() => window.print()}>Eksporter til PDF</button>
-          </div>
+          <p>
+            <b>Merk:</b> Data lagres ikke i Lite – skriv ut/eksporter til PDF.
+          </p>
         </div>
-
-        <ToolbarCore
-          ctx={{ ...toolbarCtx, online: false, dirty: false }}
-          slots={liteSlots}
-          projectName="Progress Lite"
-          status="offline"
-          maxWidth="960px"
-        />
-
-        <div style={{ borderTop: "1px solid #2A2E34" }}>
-          {tableSection}
-        </div>
-
-        <div style={{ borderTop: "1px solid #2A2E34", display: "grid", placeItems: "center", color: "#888", height: 240 }}>
-          (Statisk Gantt for utskrift – kommer)
+        <div style={{ display: "flex", gap: 8 }}>
+          <a
+            href={(() => {
+              const u = new URL(window.location.href);
+              u.searchParams.set("mode", "full");
+              return `${u.pathname}?${u.searchParams.toString()}`;
+            })()}
+            className="mcl-btn no-print"
+            style={{ textDecoration: "none" }}
+          >
+            Gå til full modus
+          </a>
+          <button className="mcl-btn no-print" onClick={() => window.print()}>
+            Eksporter til PDF
+          </button>
         </div>
       </div>
-    );
+
+      <ToolbarCore
+        ctx={{ ...toolbarCtx, online: false, dirty: false }}
+        slots={liteSlots}
+        projectName="Progress Lite"
+        status="offline"
+        maxWidth="960px"
+      />
+
+      <div style={{ borderTop: "1px solid #2A2E34" }}>{tableSection}</div>
+
+        <div
+        style={{
+          borderTop: "1px solid #2A2E34",
+          display: "grid",
+          placeItems: "center",
+          color: "#888",
+          height: 240,
+        }}
+      >
+        (Statisk Gantt for utskrift – kommer)
+      </div>
+    </div>
+  );
 
   const fullView = (
-    <div className="progress-full-mode" style={{ display: "grid", gridTemplateRows: "auto auto 1fr auto", height: "100%" }}>
+    <div
+      className="progress-full-mode"
+      style={{ display: "grid", gridTemplateRows: "auto auto 1fr auto", height: "100%" }}
+    >
       <ProjectInfoBanner />
 
       <ToolbarCore
@@ -319,7 +335,8 @@ export default function App() {
             Toggle Dirty ({String(dirty)})
           </button>
         </div>
-         {tableSection}
+        {tableSection}
+      </div>
 
       {ganttSection}
     </div>
