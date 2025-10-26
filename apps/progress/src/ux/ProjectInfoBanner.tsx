@@ -3,7 +3,7 @@ import React from "react";
 import { useProgressCtx } from "../context/ProgressContext";
 
 export function ProjectInfoBanner() {
-  const { projectId, orgId, locale, mode } = useProgressCtx();
+  const { projectId, orgId, mode } = useProgressCtx();
 
   // Vis kun i full-modus
   if (mode === "lite") return null;
@@ -22,7 +22,6 @@ export function ProjectInfoBanner() {
     >
       <div><b>Prosjekt:</b> {projectId ?? "—"}</div>
       <div><b>Org:</b> {orgId ?? "—"}</div>
-      <div><b>Språk:</b> {locale ?? "—"}</div>
     </div>
   );
 }
