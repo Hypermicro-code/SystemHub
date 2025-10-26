@@ -1,10 +1,12 @@
 import React from "react"
 import "./index.css"
-import "./i18n"
 import ToolbarCore from "./core/ToolbarCore"
 import { registerCommands } from "./core/CommandRegistry"
 import { ToolbarContext, SlotInjection } from "./core/types"
-import { Layers, Percent } from "lucide-react"
+const DEMO_ICONS = {
+  planning: "🗂️",
+  vat: "💰",
+}
 
 export default function App(){
   const [ctx, setCtx] = React.useState<ToolbarContext>({
@@ -19,8 +21,8 @@ export default function App(){
   // Demo: app-spesifikke kommandoer som injiseres i ribbon
   React.useEffect(()=>{
     registerCommands([
-      { id:"planning.timescale", labelKey:"Planning", icon:<Layers/>,  group:"planning",  run:()=>alert("Timeskala (demo)") },
-      { id:"estimates.vat",     labelKey:"MVA",      icon:<Percent/>, group:"estimates", run:()=>alert("MVA-profil (demo)") }
+     { id:"planning.timescale", label:"Planning", icon: DEMO_ICONS.planning, group:"planning",  run:()=>alert("Timeskala (demo)") },
+      { id:"estimates.vat",     label:"MVA",      icon: DEMO_ICONS.vat,       group:"estimates", run:()=>alert("MVA-profil (demo)") }
     ])
   },[])
 
