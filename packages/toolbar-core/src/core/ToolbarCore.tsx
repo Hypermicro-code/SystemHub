@@ -1,14 +1,28 @@
 import React from "react"
-import { useTranslation } from "react-i18next"
 import ToolbarGroup from "@/components/ToolbarGroup"
 import { ToolbarContext, ToolbarGroupDef, SlotInjection } from "./types"
 import { registerCommands } from "./CommandRegistry"
-import {
-  Save, Undo2, Redo2, ZoomIn, ZoomOut, Square,
-  Scissors, Copy, ClipboardPaste, Search,
-  ChevronRight, ChevronLeft, Trash2, Plus, HelpCircle,
-  Upload, Download, ListFilter, FileUp
-} from "lucide-react"
+const ICONS = {
+  save: "💾",
+  import: "⬆️",
+  export: "⬇️",
+  cut: "✂️",
+  copy: "📄",
+  paste: "📋",
+  undo: "↶",
+  redo: "↷",
+  delete: "🗑️",
+  zoomOut: "➖",
+  zoomReset: "🔲",
+  zoomIn: "➕",
+  filter: "🔍",
+  newRow: "➕",
+  attachment: "📎",
+  indent: "▶️",
+  outdent: "◀️",
+  help: "❓",
+  search: "🔎",
+}
 
 /* ===== [BLOCK: Default Commands] ===== */
 registerCommands([
